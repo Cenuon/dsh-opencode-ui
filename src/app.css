@@ -646,6 +646,25 @@ html body [data-conversation-scroll] .md-code-block [data-code-block-banner] {
   padding: 6px 12px;
 }
 
+/* E5h · 「已编辑 N 个文件」卡片（deliverables 的 ChangedFiles）
+ *
+ * 用户问「这个组件的样式能调吗」—— 能。实测它**几乎全部走 token**，
+ * 本插件的 token 层已经作用到它：
+ *   card   border .5px / radius var(--dsw-radius-lg)=6px / bg var(--dsw-alias-bg-layer-1)
+ *   row    hover 用 var(--dsw-alias-interactive-bg-hover)
+ *   +N/-N  用 state-success-primary / state-error-primary
+ *
+ * 唯一逃出本插件体系的是图标方块那个**硬编码 10px 圆角**：
+ *   `.vdszpW_tile{border-radius:10px}`
+ * 本插件把 --dsw-radius-* 全部收敛到 6px，硬编码的收不到，所以它在
+ * 一片 6px 圆角里显得格外圆。这里补上。
+ *
+ * 锚点用 `[data-changed-files]`（组件源码里写死的 data 属性，不随版本变）。
+ * 类名 `vdszpW_tile` 是「名字在后」的插件约定 → 用 [class$=] 后缀匹配。 */
+html body [data-changed-files] :is([class$="_tile"], [class*="_tile "]) {
+  border-radius: var(--dsw-radius-md);
+}
+
 /* E6 · 不做。清单要求把 markdown 体 gap 16→20px，但 AssistantMarkdown 的
    _body 只能靠「祖先 + 类名」双重限定才能避开 _body 的另外 6 个模块
    （r52wTW / ft5itq / UHhYua / rK8Ova …），而它的祖先链里没有稳定语义锚点，
