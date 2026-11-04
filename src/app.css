@@ -618,6 +618,27 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
   white-space: nowrap;
 }
 
+/* E5g · 代码块内边距：用户反馈「代码块的内边距也太大了」。
+ *
+ * DSH 出厂实测：
+ *   内容  `._block_7gxqk_4 :where(pre){padding:16px}`
+ *   横幅  `._banner_7gxqk_24{padding:9px 14px}`（语言标签 + 复制按钮那一条）
+ * 收到 12px / 8px 12px —— 12px 与 console 的间距刻度一致（它的表格单元格
+ * 就是 `px-3` = 12px，卡片是 `p-5` = 20px）。
+ *
+ * 选择器用**稳定锚点**而不是 hash：
+ *   `md-code-block` 是组件源码里写死的语义类
+ *     `className: he(Tn.block, "md-code-block", ...)`
+ *   `[data-code-block-banner]` 同理（`"data-code-block-banner": true`）
+ * 两者都不随 DSH 版本变。特异度 0-2-3 高于 DSH 的 0-1-1。 */
+html body [data-conversation-scroll] .md-code-block pre {
+  padding: 12px;
+}
+
+html body [data-conversation-scroll] .md-code-block [data-code-block-banner] {
+  padding: 8px 12px;
+}
+
 /* E6 · 不做。清单要求把 markdown 体 gap 16→20px，但 AssistantMarkdown 的
    _body 只能靠「祖先 + 类名」双重限定才能避开 _body 的另外 6 个模块
    （r52wTW / ft5itq / UHhYua / rK8Ova …），而它的祖先链里没有稳定语义锚点，
