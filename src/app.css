@@ -452,9 +452,26 @@ html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"]
    ========================================================================== */
 
 /* E1 · 消息区行内边距：opencode 卡片内边距 20px。
-   _scroll 有 2 个模块（tnXGgG 聊天 / JZLxKW composer），必须限定。 */
+   _scroll 有 2 个模块（tnXGgG 聊天 / JZLxKW composer），必须限定。
+   DSH 出厂是 16px，这里收到 12px —— 配合 E1b 一起减少两侧留白。 */
 html body [data-conversation-scroll] :is([class$="_scroll"], [class*="_scroll "]) {
-  padding: 20px calc(var(--dsh-composer-side-clearance) + 20px);
+  padding: 20px calc(var(--dsh-composer-side-clearance) + 12px);
+}
+
+/* E1b · 消息列宽度：放开 680~920px 的限宽。
+ *
+ * 用户反馈「这两边留白太多了」。实测两侧的大片留白**不是 padding 造成的**，
+ * 而是内容列自己的 max-width：
+ *   .kiGsTW_body  { --dsh-chat-content-width: min(calc(100% - 32px), 920px) }
+ *   （另一处默认值 var(--dsh-chat-user-width,
+ *      clamp(680px, calc(var(--dsh-conversation-column-width,0px) * .64), 920px)))
+ *   .tnXGgG_column{ max-width: var(--dsh-chat-content-width); width: 100%; margin: 0 auto }
+ * 也就是内容列被压在 680~920px 之间并**居中** —— 窗口越宽，两侧留白越大。
+ *
+ * 放开上限让内容用满可用宽度，两侧只剩 _scroll 的 padding 作为边距。
+ * 注：列本身有 margin:0 auto，max-width:none 后它自然占满，不需要再改 margin。 */
+html body [data-conversation-scroll] :is([class$="_column"], [class*="_column "]) {
+  max-width: none;
 }
 
 /* E2 · 用户气泡：去掉淡蓝底与大圆角，改 opencode 一级层 + 0.5px 发丝边框。
