@@ -191,9 +191,14 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
  * 我上面给每一行都加了 border-bottom，于是「DSH 的 divider + 我的行边框」
  * 在同一个位置画出两条杠 —— 用户截图里那个空行上下各一条就是这么来的。
  * 用 :has(+ divider) 精确让位：只有当紧邻的下一个兄弟是 DSH 的分隔线时，
- * 才撤掉我这条边框。这样既不会重复，也不会把别处的分隔线弄丢。 */
+ * 才撤掉我这条边框。这样既不会重复，也不会把别处的分隔线弄丢。
+ *
+ * ★ 撤掉边框后还必须**补回下内边距**：原来那条线占的视觉间隔是靠边框撑的，
+ * 光删边框会让「头部块」直接贴到分隔线上（用户反馈「原本的这里应该有间距的」）。
+ * 统一给 16px，与 divider 的实际视觉间距接近。 */
 [data-shortcut-modal="settings"] :is([class$="_row"], [class*="_row "]):has(+ :is([class$="_divider"], [class*="_divider "])) {
   border-bottom: none;
+  padding-bottom: 16px;
 }
 
 /* 首末行去掉外侧内边距（opencode 首行 padding-top:0、末行 padding-bottom:0）。 */
