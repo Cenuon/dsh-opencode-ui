@@ -21,7 +21,17 @@ const indent = (text, spaces) =>
 
 const pkg = JSON.parse(read('package.json'));
 const tokens = JSON.parse(read('src/tokens.json'));
-const settingsCss = read('src/settings.css').trim();
+
+// ★ 设置页皮肤开关。
+//
+// 用户最终决定「整个设置页完全回到 DSH 默认」，所以这里把它关掉：
+// src/settings.css 整份不再参与构建，设置页恢复 DSH 原生的布局、行距、
+// 下拉控件、开关、主题选择器等全部外观。
+//
+// 文件本身**保留在仓库里**（不删），把下面改成 true 即可整体恢复。
+const SKIN_SETTINGS_PAGE = false;
+const settingsCss = SKIN_SETTINGS_PAGE ? read('src/settings.css').trim() : '';
+
 const appCss = read('src/app.css').trim();
 const body = read('src/module.js').trim();
 
