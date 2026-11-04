@@ -24,41 +24,26 @@
  * ========================================================================= */
 
 /* ---------------------------------------------------------------------------
- * 1. 全屏化：overlay + mask + panel                    [C-14, C-15]
- *    设置页原本是 800×800 居中模态框。改成铺满「窗口 chrome 以下」的全部区域
- *    （--dsh-frame-chrome-top 之上留给窗口拖拽区，与 DSH 自身 mask 的 inset 一致）。
+ * 1. 设置面板：**保持 DSH 原生形态**
+ *
+ * ★ 用户最终决定「设置还是用 dsh 原版的弹窗吧」，所以这里不再全屏化、也不再
+ *   限宽居中 —— 交回 DSH 自己的 800×800 居中模态框（_panel 自带 width:800px
+ *   + overlay 的 justify-content:center + mask 背景）。
+ *
+ *   回退掉的两轮尝试（都不对）：
+ *     a) 全屏铺满 + 内容列 640px 单独居中 → 导航钉在窗口最左、内容飘到中间，
+ *        中间裂开 600px（用户截图标箭头「旁边要挪过来」）。
+ *     b) 全屏 + 导航与内容整体限宽 1092px 居中 → 仍不是原生气质。
+ *
+ *   只保留下面的字号标尺，供本文件其余规则复用。overlay / mask / panel 的
+ *   全屏覆盖全部删除，让 DSH 原生样式生效。
  * ------------------------------------------------------------------------ */
-
-body > :is([class$="_overlay"], [class*="_overlay "]):has(> [data-shortcut-modal="settings"]) {
-  inset: var(--dsh-frame-chrome-top, 0px) 0 0;
-  display: block;
-}
-
-/* 面板已铺满，遮罩永远看不见：去掉模糊与底色，避免全屏后仍有一层灰罩。 */
-body > :is([class$="_overlay"], [class*="_overlay "]):has(> [data-shortcut-modal="settings"]) > :is([class$="_mask"], [class*="_mask "]) {
-  inset: 0;
-  background: transparent;
-  backdrop-filter: none;
-}
 
 body > :is([class$="_overlay"], [class*="_overlay "]) > [data-shortcut-modal="settings"] {
   /* 局部字号标尺：opencode 基准 13px / 次级 12px，叠加在用户的 DSH 基准之上。 */
   --ocui-fs-base: calc(13px + var(--dsh-content-font-delta, 0px));
   --ocui-fs-sm: calc(12px + var(--dsh-content-font-delta-secondary, 0px));
 
-  /* ★ 整个面板限宽并居中，而不是内容列单独居中。
-   *
-   * 历史：先试过「全屏 + 内容列 640 居中」——结果导航钉在窗口最左、内容被推到
-   * 中间，两者裂开 600px，用户反馈「旁边要挪过来」。
-   * 正确做法是把**导航 + 内容当作一个整体**限制宽度再居中：
-   *   导航 260 + 间距 128 + 内容 640 + 右侧留白 64 = 1092
-   * overlay 本身是 justify-content:center 的 flex，限宽后自动居中。 */
-  width: min(1092px, 100%);
-  height: 100%;
-  max-width: 1092px;
-  margin-inline: auto;
-  border-radius: 0;
-  box-shadow: none;
   letter-spacing: -0.04px;
   font-weight: 400;
 }
@@ -67,23 +52,15 @@ body > :is([class$="_overlay"], [class*="_overlay "]) > [data-shortcut-modal="se
  * 2. 左导航                                             [C-16 ~ C-22]
  * ------------------------------------------------------------------------ */
 
-/* 左导航宽度按 OpenCode 桌面版设置页实测反推（截图缩放 2.0）：它的激活药丸
-   宽 217px、左缘在 x=37.5。原来照 console 网页版的 180px/12px 内边距做，
-   实测药丸只有 130px 宽、贴着窗口左缘，用户反馈「都挤着了」。
-   改成 260px + 24px 内边距后药丸约 212px，与桌面版基本一致。 */
+/* 左导航宽度：回到 DSH 原生的 188px。
+ *
+ * 曾经为了全屏布局按 OpenCode 桌面版实测改成 260px（药丸约 212px 宽）。
+ * 面板改回原生 800px 模态框后，260px 会挤掉内容区的空间（800 - 260 = 540），
+ * 所以一并回退。若要恢复加宽，需要同时确认内容区仍够放表格与下拉控件。 */
 [data-shortcut-modal="settings"] :is([class$="_nav"], [class*="_nav "]) {
-  gap: 16px;
-  width: 260px;
-  padding: 20px 24px 0;
-}
-
-/* macOS 窗口的红绿灯浮在页面左上角，而 --dsh-frame-chrome-top 在 darwin 下是
-   0px，所以铺满的面板会让导航标题「设置」正好压在交通灯底下（用户截图实测：
-   标题 y 21.5..30.5，交通灯 y 16..25.5，重叠）。用 --dsh-frame-top-clearance
-   （darwin 48px）把导航内容推到窗口 chrome 以下，与桌面版设置页的做法一致
-   —— 红绿灯浮在页面上、内容从它下方开始。 */
-html[data-platform="darwin"] [data-shortcut-modal="settings"] :is([class$="_nav"], [class*="_nav "]) {
-  padding-top: 52px;
+  gap: 18px;
+  width: 188px;
+  padding: 22px 12px 0;
 }
 
 [data-shortcut-modal="settings"] :is([class$="_navTitle"], [class*="_navTitle "]) {
@@ -184,33 +161,12 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
-/* 全屏后内容列限宽到 opencode 的 640px，并在剩余空间里**居中**。
+/* 内容区：交回 DSH 原生（`padding: 0 24px 24px`，不限宽）。
  *
- * ★ 历史：这里原本是「左对齐 + 左侧 104px 内边距」，依据是 OpenCode 桌面版
- *   参考图（导航药丸右缘 x=254.5、内容卡片左缘 x=383，间距 128.5 → 换算 104px）。
- *   但在**全屏**布局下，窗口越宽内容越贴左、右侧裂开一大片空白，用户反馈
- *   「能不能把设置居中显示」。所以改成居中：内容列 640px 定宽 + 两侧对称留白。
- *
- * ⚠️ padding 必须是**对称**的（24px 四边）。只要左右不等（比如还留着 104px），
- *    `align-items: center` 会以 padding box 为基准居中，整列会偏 40px。
- *
- * slot 宿主是 <div data-slot style="display:contents">，不产生盒子，所以真正的
- * flex item 是 slot 内部的 section 元素 —— 两条选择器都写上以兼容两种渲染。 */
-[data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  /* 左 128 = 导航与内容之间的间距；右 64 = 面板右侧留白。
-     两者相加 192，正好让 1092 - 260(导航) - 192 = 640 的内容列填满可用宽度。 */
-  padding: 24px 64px 32px 128px;
-}
-
-[data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) > *,
-[data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) > [data-slot] > * {
-  width: 100%;
-  max-width: 640px;
-  margin-inline: 0;
-}
+ * 曾把内容列限宽 640px，并先后做过「左对齐 + 104px 左内边距」「居中」「整体
+ * 限宽 1092px」三种布局 —— 都是为配合全屏面板。面板回到原生 800px 模态框后，
+ * 内容区只有 612px 宽，再限 640 已无意义，反而会把内容整体压窄。
+ * 所以这里不再声明任何布局属性，让 DSH 的 _options 原样生效。 */
 
 /* ---------------------------------------------------------------------------
  * 5. 卡片与行                                            [C-27 ~ C-37]
