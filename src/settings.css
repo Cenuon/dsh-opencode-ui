@@ -213,6 +213,18 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
   border-bottom-color: var(--dsw-alias-border-l2);
 }
 
+/* ★ 别和 DSH 自己的分隔线叠在一起。
+ * 账号/余额那类卡片用的是**独立的 `_divider` 元素**画线，行本身没有边框
+ * （实测 `._7lc4_a_row{min-height:40px;padding:6px 0}` 无 border，
+ *  `._7lc4_a_divider{border-top:.5px solid ...}` 才是线）。
+ * 我上面给每一行都加了 border-bottom，于是「DSH 的 divider + 我的行边框」
+ * 在同一个位置画出两条杠 —— 用户截图里那个空行上下各一条就是这么来的。
+ * 用 :has(+ divider) 精确让位：只有当紧邻的下一个兄弟是 DSH 的分隔线时，
+ * 才撤掉我这条边框。这样既不会重复，也不会把别处的分隔线弄丢。 */
+[data-shortcut-modal="settings"] :is([class$="_row"], [class*="_row "]):has(+ :is([class$="_divider"], [class*="_divider "])) {
+  border-bottom: none;
+}
+
 /* 首末行去掉外侧内边距（opencode 首行 padding-top:0、末行 padding-bottom:0）。 */
 [data-shortcut-modal="settings"] :is([class$="_row"], [class*="_row "]):first-child {
   padding-top: 0;
