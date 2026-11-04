@@ -647,9 +647,10 @@ ctx.slots.inject("settings.general.item", () => ctx.slots.register({
 
 - 同一 profile 的 `package.json` 也在 **14:42** 被重写（内容未变），目录 mtime 14:42。
 - 我 14:36:57–14:39:53 的 180s 每 5s 采样**未发现变化**，说明不是固定周期；但 14:28 与 14:40:30 两次都**不是**我发起的。
-- 【实测读日志】本会话事件流在 14:28:00 与 14:40:30 前后，**只有我自己的只读命令**（`grep` / `node asar.mjs cat` / `node verify-lines.mjs`），**没有任何 write/edit/重定向**。
+- 【实测读日志】**范围更正**：我先前写的「本会话事件流里没有任何 write/edit」只覆盖**我自己的 subagent 会话**（`96be04f0-…`，其父会话是 `session-9997a909-…`，即 Lead 会话）。我随后也检索了 **Lead 会话** `session-9997a909`（2815 个事件）中对 `cordis.patch.yml` / `profiles/desktop` 的**全部** 28 次工具调用：全部是 `sed -n` / `diff` / `stat` / `grep` / `cat` 这类**只读**操作，**没有** `write`/`edit`/`plugin_manager` 写入该路径。所以「本 Team 的可观测工具调用里没有写过它」这个结论对两个会话都成立。
 - 【实测读文件】`.plugin-manager/logs/` 下**没有** 14:20 之后的新操作记录，所以不是 `plugin_manager` 安装/启停流程。
-- `lsof` 只显示 DSH 桌面端主进程（pid 21837）以**只读**持有该文件。
+- 【实测读源码】DSH 里唯一会对 profile `package.json` 和 patch 文档做 `writeFileAtomic` 的是 `dsh-plugin-manager`（`lib/index.js:320` 写 `package.json`、`:1078` 写配置文档）。这与观测到的「新 inode、birth==mtime、无 `.bak`」签名一致，但我**没有**找到触发它的记录。
+- 剩余候选（按可能性，**均为推测**）：① 用户在 GUI 里操作设置开关；② Host 自身的 profile 对账/归一化流程；③ 我看不到的其它 agent 会话或进程。
 - `com.apple.provenance` xattr 在我自己创建的文件上同样是 `11`，**不具备区分能力**，不能用来指认写入者。
 - **结论：写入者身份未能确定。我不做推测性归因。** 但可以确定的是：**开关的当前值是 `true`，卡片应当恢复正常显示。**
 

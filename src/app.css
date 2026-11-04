@@ -545,18 +545,25 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
   margin: 0;
 }
 
-/* E5e · 列宽按内容分配（用户反馈「表格好丑，特别是第一列」）。
+/* E5e · 列宽：首列按内容收窄（用户反馈「表格好丑，特别是第一列」）。
  *
- * DSH 出厂有两条互相打架的规则：
- *   ._tableScroll_ table{width:max-content}   ← 内容自适应（默认）
- *   ._tableFill_   table{width:100%;max-width:none}  ← 撑满，覆盖前者
- * 走 _tableFill_ 那条时，自动布局在内容短的情况下会把各列**均分** ——
- * 实测「元素」两个字占了表格三分之一的宽度（约 530px），第一列大片留白。
- * 这里恢复内容自适应，并用 max-width:100% 兜住不溢出（超宽时由外层
- * _tableScroll_ 的 overflow-x 滚动，不会撑破布局）。 */
+ * 上一版我把整张表改成 width:max-content，这是**错的** ——
+ * `_tableScroll_` 是块级元素、占满整行，表格一缩，就变成「整行宽的外框里
+ * 塞一张窄表」，比原来更丑。这里回退成撑满宽度。
+ *
+ * 真正的问题在于自动布局的分配规则：`width:100%` 时浏览器把**多余宽度均分**
+ * 给各列，所以「元素」两个字也占了三分之一宽（实测约 530px）。
+ * 只针对**首列**用 `width:1%` + nowrap 让它收缩到内容宽度，多余宽度自然
+ * 落到后面的列 —— 这正是参考图里「菜单项」那一列的表现（约 170px，
+ * 刚好等于该列最长内容的宽度）。 */
 html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) table {
-  width: max-content;
-  max-width: 100%;
+  width: 100%;
+  max-width: none;
+}
+
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) :is(th, td):first-child {
+  width: 1%;
+  white-space: nowrap;
 }
 
 /* E6 · 不做。清单要求把 markdown 体 gap 16→20px，但 AssistantMarkdown 的
