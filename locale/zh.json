@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "opencode ui",
+    "description": "把 DSH 的设置页与主界面换成 opencode console 的视觉语言：灰阶层级、6px 圆角、0.5px 发丝边框、零阴影。"
+  }
+}

@@ -1,0 +1,623 @@
+/* ============================================================================
+ * opencode ui — 设置页结构化覆盖 (settings surface)
+ * ----------------------------------------------------------------------------
+ * 职责边界
+ *   本文件只做：布局 / 间距 / 边框宽度 / 字号 / 字重 / 字距 / 尺寸 / 阴影移除 /
+ *              结构重排。
+ *   颜色与圆角**不在这里**：由 src/tokens.json 经 ctx.theme.overrideTokens 覆盖
+ *   --dsw-alias-* / --dsw-radius-*。因此本文件一律引用 var(--dsw-*)，不写死色值
+ *   与圆角值。
+ *
+ * 选择器约定（来自 .research-opencode-ui/surface-settings.md §2）
+ *   插件类名      <hash>_<名字>          后缀稳定  → [class$="_名字"]
+ *   primitives    _<名字>_<hash>_<序号>   后缀是易变数字 → 绝不使用 [class$=]，
+ *                改用 [class^="_名字_"]，或优先用 ARIA / data-* / 结构锚点。
+ *   每个选择器都带祖先限定。设置面板用 [data-shortcut-modal="settings"] 作作用域
+ *   前缀；面板自身的祖先（overlay / mask）用 :has(> [data-shortcut-modal="settings"])
+ *   限定。裸写 [class$="_panel"] 会命中 12 个模块、[class$="_header"] 会命中 18 个。
+ *
+ * 字号策略（设计文档决策 2）
+ *   DSH 的字号是用户可设偏好（--dsh-content-font-size，10–22px，默认 14px），
+ *   皮肤不替用户改。所有 font-size 一律写成 calc(<opencode基准>px + var(--dsh-content-font-delta))
+ *   —— 即「相对用户基准的偏移」，用户调大调小仍然生效，同时拿到 opencode 的字阶。
+ *   字重 440/530 用 400/500 近似（无 Inter 可变字体，见设计文档决策 3）。
+ * ========================================================================= */
+
+/* ---------------------------------------------------------------------------
+ * 1. 全屏化：overlay + mask + panel                    [C-14, C-15]
+ *    设置页原本是 800×800 居中模态框。改成铺满「窗口 chrome 以下」的全部区域
+ *    （--dsh-frame-chrome-top 之上留给窗口拖拽区，与 DSH 自身 mask 的 inset 一致）。
+ * ------------------------------------------------------------------------ */
+
+body > [class$="_overlay"]:has(> [data-shortcut-modal="settings"]) {
+  inset: var(--dsh-frame-chrome-top, 0px) 0 0;
+  display: block;
+}
+
+/* 面板已铺满，遮罩永远看不见：去掉模糊与底色，避免全屏后仍有一层灰罩。 */
+body > [class$="_overlay"]:has(> [data-shortcut-modal="settings"]) > [class$="_mask"] {
+  inset: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+body > [class$="_overlay"] > [data-shortcut-modal="settings"] {
+  /* 局部字号标尺：opencode 基准 13px / 次级 12px，叠加在用户的 DSH 基准之上。 */
+  --ocui-fs-base: calc(13px + var(--dsh-content-font-delta, 0px));
+  --ocui-fs-sm: calc(12px + var(--dsh-content-font-delta-secondary, 0px));
+
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  border-radius: 0;
+  box-shadow: none;
+  letter-spacing: -0.04px;
+  font-weight: 400;
+}
+
+/* ---------------------------------------------------------------------------
+ * 2. 左导航                                             [C-16 ~ C-22]
+ * ------------------------------------------------------------------------ */
+
+[data-shortcut-modal="settings"] [class$="_nav"] {
+  gap: 16px;
+  width: 180px;
+  padding: 20px 12px 0;
+}
+
+[data-shortcut-modal="settings"] [class$="_navTitle"] {
+  padding: 0 12px;
+  font-size: var(--ocui-fs-base);
+  font-weight: 500;
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class$="_navList"] {
+  gap: 4px;
+}
+
+/* opencode 导航项：28px 高、6px 圆角、0 6px 内边距、13px/400。 */
+[data-shortcut-modal="settings"] [class$="_navCell"] {
+  height: 28px;
+  gap: 8px;
+  padding: 0 6px;
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  line-height: 20px;
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+/* hover 与激活同底色（opencode 用 rgba(0,0,0,.08) 一档），无左侧色条、不加粗。 */
+[data-shortcut-modal="settings"] [class$="_navCell"]:hover,
+[data-shortcut-modal="settings"] [class$="_navCell"][aria-current="true"] {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+[data-shortcut-modal="settings"] [class$="_navIcon"] {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------------------------------------------------------------------------
+ * 3. 侧栏入口（trigger 行在 sidebar 里，不在面板内）      [C-23]
+ *    用 :has() 锚定「带 aria-haspopup=dialog 的 trigger」的父行，避免误伤
+ *    其它 _trigger 模块（全库 12 个）。
+ * ------------------------------------------------------------------------ */
+
+body [class$="_triggerRow"]:has(> [aria-haspopup="dialog"][class$="_trigger"]) {
+  gap: 8px;
+  margin: 4px -2px;
+}
+
+body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"] {
+  height: 28px;
+  gap: 8px;
+  padding: 0 6px;
+  border-radius: var(--dsw-radius-md);
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
+  font-weight: 400;
+  line-height: 20px;
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+/* ---------------------------------------------------------------------------
+ * 4. 内容区：header / actions / close / options          [C-24 ~ C-26]
+ *    注意：不伪造顶栏与标签条（设计文档决策 2）。_header 是 DSH 真实存在的
+ *    action + close 行，只做轻量化，不新增元素、不用伪元素画假 UI。
+ * ------------------------------------------------------------------------ */
+
+[data-shortcut-modal="settings"] [class$="_content"] {
+  min-height: 0;
+}
+
+[data-shortcut-modal="settings"] [class$="_header"] {
+  height: auto;
+  align-items: center;
+  padding: 8px 12px 0;
+}
+
+[data-shortcut-modal="settings"] [class$="_actions"] {
+  gap: 8px;
+}
+
+[data-shortcut-modal="settings"] [class$="_close"] {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--dsw-radius-md);
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+[data-shortcut-modal="settings"] [class$="_close"]:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+/* 全屏后内容列居中并限宽到 opencode 的 640px。
+ * slot 宿主是 <div data-slot style="display:contents">，不产生盒子，所以真正的
+ * flex item 是 slot 内部的 section 元素 —— 两条选择器都写上以兼容两种渲染。 */
+[data-shortcut-modal="settings"] [class$="_options"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 24px 32px;
+}
+
+[data-shortcut-modal="settings"] [class$="_options"] > *,
+[data-shortcut-modal="settings"] [class$="_options"] > [data-slot] > * {
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+/* ---------------------------------------------------------------------------
+ * 5. 卡片与行                                            [C-27 ~ C-37]
+ * ------------------------------------------------------------------------ */
+
+/* 行容器：opencode 卡片行 padding 20px 0 / gap 24 / 0.5px 分隔。 */
+[data-shortcut-modal="settings"] [class$="_row"] {
+  gap: 24px;
+  padding: 20px 0;
+  border-bottom-width: 0.5px;
+  border-bottom-style: solid;
+  border-bottom-color: var(--dsw-alias-border-l2);
+}
+
+/* 首末行去掉外侧内边距（opencode 首行 padding-top:0、末行 padding-bottom:0）。 */
+[data-shortcut-modal="settings"] [class$="_row"]:first-child {
+  padding-top: 0;
+}
+
+[data-shortcut-modal="settings"] [class$="_row"]:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+[data-shortcut-modal="settings"] [class$="_title"] {
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class$="_description"] {
+  margin-top: 4px;
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  line-height: 20px;
+}
+
+/* 卡片：边框宽度收敛到 0.5px 发丝线（颜色由 token 层负责）。 */
+[data-shortcut-modal="settings"] [class$="_card"],
+[data-shortcut-modal="settings"] [class$="_rowCard"],
+[data-shortcut-modal="settings"] [class$="_setupCard"],
+[data-shortcut-modal="settings"] [class$="_skeletonCard"] {
+  border-width: 0.5px;
+  border-style: solid;
+  box-shadow: none;
+}
+
+/* opencode 卡片内边距 20px。 */
+[data-shortcut-modal="settings"] [class$="_cardContent"],
+[data-shortcut-modal="settings"] [class$="_rowCard"] {
+  padding: 20px;
+}
+
+/* opencode 是单列文档流，不是双列卡片网格。
+ * 只改 grid-template-columns（对 flex 列表无效，天然只命中 uuMOda_cards 的双列 grid），
+ * 不动 gap —— 否则会连带清掉 syyOqq_cards 这个 flex 列表的间距。 */
+[data-shortcut-modal="settings"] [class$="_cards"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 分区容器：去掉各页自带的 720/760px 限宽（由 _options 统一到 640px），
+ * 并把区块间距拉到 opencode 的 32px。 */
+[data-shortcut-modal="settings"] [class$="_section"] {
+  gap: 32px;
+  max-width: none;
+}
+
+[data-shortcut-modal="settings"] [class$="_heading"] {
+  font-size: var(--ocui-fs-base);
+  font-weight: 500;
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class$="_intro"] {
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class$="_group"] + [class$="_group"] {
+  padding-top: 20px;
+  border-top-width: 0.5px;
+  border-top-style: solid;
+  border-top-color: var(--dsw-alias-border-l2);
+}
+
+[data-shortcut-modal="settings"] [class$="_groupTitle"] {
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class$="_switcher"] {
+  height: 28px;
+  gap: 8px;
+  padding: 0 8px;
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  line-height: 20px;
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+[data-shortcut-modal="settings"] [class$="_search"] input {
+  height: 28px;
+  padding: 0 32px 0 32px;
+  border-width: 0.5px;
+  border-style: solid;
+  border-color: var(--dsw-alias-border-l1);
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-base);
+}
+
+/* 下拉箭头原本是硬编码 %2381858C 的 data-URI，深色模式下不会变色。
+ * 改用 currentColor 描边的内联 SVG，让箭头跟随文字色。 */
+[data-shortcut-modal="settings"] [class$="_selectInput"] {
+  height: 28px;
+  border-radius: var(--dsw-radius-md);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 12px 12px;
+}
+
+/* ---------------------------------------------------------------------------
+ * 6. Plugins 页标签条                                    [C-38 ~ C-41]
+ *    注意：settings.plugins.tab 默认只有 1 个注册者，标签条通常不渲染；
+ *    这些规则只在出现 ≥2 个 tab 时生效。
+ * ------------------------------------------------------------------------ */
+
+[data-shortcut-modal="settings"] [class$="_tabs"] {
+  height: 48px;
+  align-items: center;
+  gap: 2px;
+  border-bottom-width: 0.5px;
+  border-bottom-style: solid;
+  border-bottom-color: var(--dsw-alias-border-l2);
+}
+
+[data-shortcut-modal="settings"] [class$="_tab"] {
+  padding: 0 12px;
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  line-height: 20px;
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+/* 激活 tab：opencode 用字重 530 拉层级，下划线 1px、色取 border-inverse。 */
+[data-shortcut-modal="settings"] [class$="_tab"][data-active="true"] {
+  font-weight: 500;
+}
+
+[data-shortcut-modal="settings"] [class$="_tab"][data-active="true"]::after {
+  height: 1px;
+  border-radius: 0;
+  background: var(--dsw-alias-label-primary);
+}
+
+/* 聚焦不借用激活下划线指示器，避免与选中态混淆。 */
+[data-shortcut-modal="settings"] [class$="_tab"]:focus-visible::after {
+  content: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * 7. 表单控件                                            [C-42 ~ C-66]
+ *    SettingsForm / SettingsValueField 的类名属于 primitives 命名（_名字_hash_序号），
+ *    一律用 [class^=] 或结构关系选择器，绝不用 [class$=]。
+ * ------------------------------------------------------------------------ */
+
+/* 值字段：纵向（标签在上、输入在下）→ opencode 的横向行（标签左、控件右）。 */
+[data-shortcut-modal="settings"] [class^="_field_"] {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 0;
+}
+
+[data-shortcut-modal="settings"] [class^="_field_"] + [class^="_field_"] {
+  border-top-width: 0.5px;
+  border-top-style: solid;
+  border-top-color: var(--dsw-alias-border-l2);
+}
+
+/* 横向后，左侧的标题块需要纵向堆叠（标题 + 说明/徽标）。 */
+[data-shortcut-modal="settings"] [class^="_field_"] > [class^="_head_"] {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+[data-shortcut-modal="settings"] [class^="_field_"] > [class^="_head_"] > [class^="_labelGroup_"] {
+  flex: 1;
+  min-width: 0;
+}
+
+[data-shortcut-modal="settings"] [class^="_field_"] [class^="_label_"] {
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class^="_field_"] [class^="_helpButton_"] {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--dsw-radius-md);
+}
+
+[data-shortcut-modal="settings"] [class^="_field_"] > [class^="_help_"] {
+  padding-top: 8px;
+  font-size: var(--ocui-fs-sm);
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class^="_field_"] > [class^="_head_"] > [class^="_badges_"] {
+  gap: 8px;
+}
+
+[data-shortcut-modal="settings"] [class^="_field_"] > [class^="_head_"] > [class^="_badges_"] button {
+  font-size: var(--ocui-fs-sm);
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+/* 输入框：0.5px 发丝边框、28px 高、与 opencode 控件节奏对齐。 */
+[data-shortcut-modal="settings"] [class^="_field_"] > input {
+  height: 28px;
+  width: auto;
+  min-width: 160px;
+  max-width: 320px;
+  padding: 0 8px;
+  border-width: 0.5px;
+  border-style: solid;
+  border-color: var(--dsw-alias-border-l1);
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-base);
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class^="_field_"] > input:focus-visible {
+  outline: none;
+  border-color: var(--dsw-alias-state-business-primary);
+  box-shadow: none;
+}
+
+[data-shortcut-modal="settings"] [class^="_field_"] > input[aria-invalid="true"] {
+  border-color: var(--dsw-alias-state-error-primary);
+}
+
+[data-shortcut-modal="settings"] [class^="_field_"] > p {
+  font-size: var(--ocui-fs-sm);
+  line-height: 20px;
+}
+
+/* 表单框架：footer 与保存按钮。 */
+[data-shortcut-modal="settings"] [class^="_form_"] {
+  gap: 0;
+}
+
+[data-shortcut-modal="settings"] [class^="_form_"] > p {
+  margin-bottom: 12px;
+  font-size: var(--ocui-fs-sm);
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class^="_form_"] > [class^="_footer_"] {
+  gap: 8px;
+  padding-top: 20px;
+}
+
+[data-shortcut-modal="settings"] [class^="_form_"] > [class^="_footer_"] > p {
+  font-size: var(--ocui-fs-sm);
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class^="_form_"] > [class^="_footer_"] > button {
+  padding: 4px 12px;
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  line-height: 20px;
+  box-shadow: none;
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+/* 开关：opencode 不用胶囊。28×16、6px 圆角，滑块 12px。 */
+[data-shortcut-modal="settings"] button[role="switch"] {
+  width: 28px;
+  height: 16px;
+  padding: 2px;
+  border-radius: var(--dsw-radius-md);
+  transition: background-color 85ms ease-out;
+}
+
+[data-shortcut-modal="settings"] button[role="switch"] > span {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--dsw-radius-xs);
+}
+
+[data-shortcut-modal="settings"] button[role="switch"][aria-checked="true"] > span {
+  transform: translate(12px);
+}
+
+/* 徽标（Tag）：同样去胶囊，改用 6px 圆角体系。 */
+[data-shortcut-modal="settings"] [class^="_tag_"] {
+  padding: 1px 6px;
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-sm);
+  font-weight: 400;
+  line-height: 17px;
+}
+
+/* 通用 Button：统一圆角与高度节奏。 */
+[data-shortcut-modal="settings"] [class^="_button_"] {
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-base);
+  line-height: 20px;
+  box-shadow: none;
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+[data-shortcut-modal="settings"] [class^="_sm_"] {
+  height: 28px;
+  padding: 0 8px;
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-sm);
+}
+
+[data-shortcut-modal="settings"] [class^="_md_"] {
+  height: 28px;
+}
+
+/* 分段控件：去大圆角、去指示器阴影。 */
+[data-shortcut-modal="settings"] [class^="_control_"] {
+  padding: 2px;
+  border-radius: var(--dsw-radius-md);
+}
+
+[data-shortcut-modal="settings"] [class^="_control_"] [class^="_indicator_"] {
+  top: 2px;
+  left: 2px;
+  height: calc(100% - 4px);
+  border-radius: var(--dsw-radius-xs);
+  box-shadow: none;
+}
+
+[data-shortcut-modal="settings"] [class^="_control_"] [class^="_tab_"] {
+  height: 24px;
+  padding: 0 12px;
+  border-radius: var(--dsw-radius-xs);
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+[data-shortcut-modal="settings"] [class^="_tabs_"] {
+  padding: 2px;
+  border-radius: var(--dsw-radius-md);
+}
+
+[data-shortcut-modal="settings"] [class^="_tabs_"] [class^="_indicator_"] {
+  inset: 2px auto 2px 2px;
+  border-width: 0.5px;
+  border-style: solid;
+  border-color: var(--dsw-alias-border-l1);
+  border-radius: var(--dsw-radius-xs);
+  box-shadow: none;
+}
+
+[data-shortcut-modal="settings"] [class^="_tabs_"] [class^="_tab_"] {
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--dsw-radius-xs);
+  font-size: var(--ocui-fs-base);
+  font-weight: 400;
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+/* 通用 Dialog（_root_o6lrb_* / _dialog_o6lrb_*）**故意不在这里做**：
+ * 该 primitive 走 createPortal(..., document.body)，DOM 上在设置面板之外，
+ * 没有任何可区分「从设置页打开」的标记（settings 面板用的是自己的 _panel 类）。
+ * 硬套只能作用于全应用的对话框，属于 app.css 的作用域，故移交。 */
+
+/* 下拉菜单（_list_4ub78_* / _item_4ub78_*）**故意不在这里做**：
+ * 该 primitive 在浮动时会 createPortal 到 document.body（源码 `g && Ne.portal` +
+ * `createPortal(H, document.body)`），只有非浮动时才留在原地。按设置面板作用域写，
+ * 会变成「有时生效有时不生效」的不一致外观 —— 比不写更糟。它是全应用共享 primitive，
+ * 应交给 app.css 全局统一处理。 */
+
+/* Models 页自有的字段/输入（tUAPGa_*，插件命名，后缀稳定）。 */
+[data-shortcut-modal="settings"] [class$="_fieldLabel"] {
+  gap: 8px;
+  font-size: var(--ocui-fs-sm);
+  font-weight: 400;
+  line-height: 18px;
+}
+
+[data-shortcut-modal="settings"] [class$="_input"] {
+  height: 28px;
+  padding: 0 8px;
+  border-width: 0.5px;
+  border-style: solid;
+  border-color: var(--dsw-alias-border-l1);
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-base);
+  line-height: 20px;
+}
+
+[data-shortcut-modal="settings"] [class$="_editor"] {
+  gap: 16px;
+  padding: 16px 0;
+  border-radius: var(--dsw-radius-md);
+}
+
+[data-shortcut-modal="settings"] [class$="_rowHead"] {
+  gap: 8px;
+}
+
+[data-shortcut-modal="settings"] [class$="_rowName"] {
+  font-size: var(--ocui-fs-base);
+  font-weight: 500;
+  line-height: 20px;
+}
+
+/* ---------------------------------------------------------------------------
+ * 8. 减少动效
+ * ------------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-shortcut-modal="settings"] [class$="_navCell"],
+  [data-shortcut-modal="settings"] [class$="_close"],
+  [data-shortcut-modal="settings"] [class$="_tab"],
+  [data-shortcut-modal="settings"] [class$="_switcher"],
+  [data-shortcut-modal="settings"] [class$="_input"],
+  [data-shortcut-modal="settings"] [class^="_button_"],
+  [data-shortcut-modal="settings"] [class^="_tab_"],
+  [data-shortcut-modal="settings"] [class^="_control_"] [class^="_tab_"],
+  [data-shortcut-modal="settings"] button[role="switch"],
+  body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"] {
+    transition: none;
+  }
+
+  [data-shortcut-modal="settings"] button[role="switch"][aria-checked="true"] > span {
+    transition: none;
+  }
+}
