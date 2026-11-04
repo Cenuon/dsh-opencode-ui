@@ -1210,6 +1210,40 @@ html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-compose
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
+/* F24 · 排队消息行：比 DSH 原版更紧凑。
+ *
+ * 用户反馈「这个组件高度太高了，小一点」。DSH 原版（`_6DJyyG_row`）：
+ *   min-height: 36px; padding: 4px 5px 4px 12px; gap: 10px
+ *   ._6DJyyG_thumb { width:24px; height:24px }
+ *   ._6DJyyG_action{ width:28px; height:28px }
+ * 实测截图（缩放 2.01）整个面板 41 CSS px = 36 + _panel 上下各 2px。
+ *
+ * 后缀命中检查（写 [class$=] 前必做）：
+ *   _row    → 6 个模块 ✗    _panel → 5 个模块 ✗    _action → 3 个模块 ✗
+ *   _thumb  → **只有 6DJyyG_thumb 一个** ✓
+ * 所以用 `:has(_thumb)` 锁定「带缩略图的行」= 队列行，其余 _row 不受影响。
+ *
+ * 收法（三层一起收，否则最小的那层会撑住高度）：
+ *   行   min-height 36 → 30、padding 4 → 2、gap 10 → 8
+ *   缩略图 24 → 20
+ *   动作按钮 28 → 24
+ * 行高 = max(30, 24 + 2*2) = 30px，面板 = 30 + 4 = 34px（原 41px）。 */
+html body :is([class$="_row"], [class*="_row "]):has(:is([class$="_thumb"], [class*="_thumb "])) {
+  min-height: 30px;
+  padding: 2px 5px 2px 10px;
+  gap: 8px;
+}
+
+html body :is([class$="_thumb"], [class*="_thumb "]) {
+  width: 20px;
+  height: 20px;
+}
+
+html body :is([class$="_row"], [class*="_row "]):has(:is([class$="_thumb"], [class*="_thumb "])) :is([class$="_action"], [class*="_action "]) {
+  width: 24px;
+  height: 24px;
+}
+
 /* F24 · 提示条 */
 html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_notice"], [class*="_notice "]) {
   border-radius: var(--dsw-radius-md);
