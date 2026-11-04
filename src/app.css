@@ -1120,8 +1120,8 @@ html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-compose
 
 /* F17 · 状态行内的直接子项统一到 13px/20px 灰阶（chrome 字号，非用户偏好） */
 html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] > * {
-  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
-  line-height: 20px;
+  font-size: calc(var(--dsh-content-font-size-secondary, 13px) - 1px);
+  line-height: calc(20px + var(--dsh-content-font-delta-secondary, 0px));
   color: var(--dsw-alias-label-secondary);
 }
 
