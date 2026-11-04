@@ -1529,3 +1529,45 @@ html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :
   font-size: 12px;
 }
 
+/* ---- G11~G14：按用户给的参照图调整外观 ----
+ * DSH 原样 → 参照图：
+ *   编号徽标  小圆角方块        → 圆形、浅灰底
+ *   选项布局  标签+描述同一行    → 描述换行到标签下方
+ *   提交按钮  蓝色实心          → 深色（近黑）实心、白字
+ *   跳过按钮  描边按钮          → 纯文字
+ */
+
+/* G11 · 编号徽标改圆形 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_number"], [class*="_number "]) {
+  border-radius: 999px;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  margin-top: 0;
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-secondary);
+}
+
+/* G12 · 选项两行：描述换成独占一行。
+ * DSH 的 _optionLine 是 flex-wrap 容器，标签和描述都是 inline 子项；
+ * 给描述 flex-basis:100% 就把它挤到下一行，且仍与标签左对齐（参照图就是这样）。 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_optionLine"], [class*="_optionLine "]) :is([class$="_description"], [class*="_description "]) {
+  flex: 0 0 100%;
+}
+
+/* G13 · 提交按钮：蓝色 → 深色反底。
+ * 用 label-primary 作底色、bg-base 作文字色，即「反色」——
+ * 和 composer 发送按钮同一套处理，跟 opencode 的近黑主按钮一致。 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_footerActions"], [class*="_footerActions "]) :is([class^="_button_"], [class*=" _button_"]):last-child {
+  background: var(--dsw-alias-label-primary);
+  color: var(--dsw-alias-bg-base);
+  border-color: transparent;
+}
+
+/* G14 · 跳过按钮：描边 → 纯文字 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_footerActions"], [class*="_footerActions "]) :is([class^="_button_"], [class*=" _button_"]):first-child {
+  background: transparent;
+  border-color: transparent;
+  color: var(--dsw-alias-label-secondary);
+}
+
