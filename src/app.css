@@ -1439,3 +1439,93 @@ html body [class*="_denseList"] [class*=" _item_"] {
   }
 }
 
+/* ==========================================================================
+   G. 提问弹窗（dsh-client-ui-user-questions 的 ggehTG_*）
+   用户反馈：「弹窗的 ui 风格，按钮要小、间距要紧凑」
+   ========================================================================== */
+
+/* G0 · 锚点说明（重要）
+ *
+ * ★ 这个弹窗**每一个后缀都冲突**。实测全 asar 的前缀清单：
+ *     _card 3 个（I1ptPW / JZLxKW / ggehTG）
+ *     _option 2 个 · _options 3 个 · _footer 2 个 · _footerActions 2 个
+ *     _header 8 个 · _title 12 个 · _body 9 个
+ *   裸用任何一个都会误伤其它模块。
+ *
+ *   它唯一稳定的锚点是自带的 `data-question-scroll`（在可滚动主体上），
+ *   所以用 `:has([data-question-scroll])` 锁定这张卡片，再往下写后代规则。
+ *   这样即使 DSH 升级换了 hash，规则也不会失配或误伤。
+ *
+ * 实测基准（截图，缩放 ≈2.44）：选项行间距 100 img px、底部按钮高 71 img px。 */
+
+/* G1 · 卡片底部内边距 10 → 8 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) {
+  padding-bottom: 8px;
+}
+
+/* G2 · 头部：padding 20/16/24 → 12/14/18，gap 16 → 12 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_header"], [class*="_header "]) {
+  gap: 12px;
+  padding: 12px 14px 0 18px;
+}
+
+/* G3 · 标题 16px/22 → 14px/20（截图里它明显比选项文字大） */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_title"], [class*="_title "]) {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* G4 · 选项列表：margin-top 8 → 6，padding 4/12 → 2/10 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_options"], [class*="_options "]) {
+  margin-top: 6px;
+  padding: 2px 10px;
+}
+
+/* G5 · 选项行 / 自定义答案行：min-height 40 → 30，padding 8 → 4，gap 8 → 6 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_option"], [class*="_option "]),
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_customRow"], [class*="_customRow "]) {
+  min-height: 30px;
+  gap: 6px;
+  padding: 4px 8px 4px 6px;
+}
+
+/* G6 · 编号徽标 20×20 → 18×18 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_number"], [class*="_number "]) {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin-top: 1px;
+}
+
+/* G7 · 选项文字与说明行高 24 → 20 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_optionLabel"], [class*="_optionLabel "]),
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_description"], [class*="_description "]) {
+  line-height: 20px;
+}
+
+/* G8 · 自定义答案输入框：min-height 64 → 48 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_customBlock"], [class*="_customBlock "]) {
+  min-height: 48px;
+  margin: 0 10px;
+}
+
+/* G9 · 底部：margin-top 12 → 8，padding 0/10/0/18 → 0/8/0/14，gap 12 → 8 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_footer"], [class*="_footer "]) {
+  margin-top: 8px;
+  padding: 0 8px 0 14px;
+  gap: 8px;
+}
+
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_footerActions"], [class*="_footerActions "]) {
+  gap: 8px;
+}
+
+/* G10 · 底部按钮（web-frontend primitives，`_button_<hash>` 约定 → [class^=]）
+ * 实测按钮高 71 img px ÷ 2.44 ≈ 29 CSS px（DSH 的 _sm 档是 28px）。
+ * 收到 24px，左右内边距 10 → 8。 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_footerActions"], [class*="_footerActions "]) :is([class^="_button_"], [class*=" _button_"]) {
+  height: 24px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
