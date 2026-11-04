@@ -741,6 +741,35 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
   white-space: nowrap;
 }
 
+/* E5i · 关掉 markdown 表格的「出血」。
+ *
+ * 用户反馈「表格超长」（表格比正文宽、两侧探出文本列）。原因在 DSH 的宽表变体
+ * —— 它**故意**让表格突破文本列：
+ *   .XNZzAa_body .md-table-wide{
+ *     --dsh-table-spare: max(0px, calc((100cqw - var(--dsh-chat-content-width)) / 2));
+ *     --dsh-table-lead:  calc(var(--dsh-table-spare)
+ *                             + min(var(--dsh-chat-content-width), 100cqw) - 100%);
+ *     width: calc(100% + var(--dsh-table-lead) + var(--dsh-table-spare));
+ *     margin-left: calc(-1 * var(--dsh-table-lead));
+ *     padding-left: var(--dsh-table-lead);
+ *   }
+ * 即左右各探出 --dsh-table-spare = (滚动区内容盒 − 文本列宽) / 2。
+ * 实测（截图缩放 1.95）：正文 x 105..1610，表格 x 65..1620 —— 两侧各探出约 20 CSS px。
+ *
+ * 这个计算的前提是 --dsh-chat-content-width 与 100cqw 基准一致；而本插件 E1b
+ * 把该变量改成了「列宽 − 128」，两者基准不同，出血量随之变得不可预期。
+ * 直接关掉出血，让表格老实待在文本列内 —— 超宽时由 _tableScroll_ 的
+ * overflow-x 滚动（DSH 本来就给了 `max-width:100%; overflow-x:auto`）。
+ *
+ * 特异度：本规则 (0,2,2) > DSH 的 `.XNZzAa_body .md-table-wide` (0,2,0)，无需 !important。
+ * `.md-table-wide` 是组件源码里写死的语义类，不随版本变。 */
+html body [data-conversation-scroll] .md-table-wide {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  padding-left: 0;
+}
+
 /* E5g · 代码块内边距：用户两次反馈留白太多。
  *
  * DSH 出厂实测：
