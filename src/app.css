@@ -1127,20 +1127,28 @@ html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-compose
 
 /* F18 · 状态项容器。用 [data-composer-stat] 语义锚点而不是旧插件的 .dshgb-pill：
    后者属于将被移除的 @local/git-branch，且新插件的类名尚未定。
-   这条同时覆盖 DSH 自带的 StatsPills 与新插件的 git 分支项。 */
+   这条同时覆盖 DSH 自带的 StatsPills 与新插件的 git 分支项。
+
+   ★ 字号/行高直接沿用 DSH 原版表达式（`dsh-client-ui-chat` 的 TQ0rwa_anchor）：
+       font-size: calc(var(--dsh-content-font-size-secondary, 13px) - 1px);
+       line-height: calc(20px + var(--dsh-content-font-delta-secondary, 0px));
+   默认字号下即 **12px / 20px**。之前我写死 13px/20px，比原版大一档，
+   用户反馈「字体太大了，调整为和原版一样大」。
+   用 DSH 的表达式而不是写死 12px，是为了继续跟随用户的字号偏好。 */
 html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] [data-composer-stat] {
   border-radius: var(--dsw-radius-md);
   gap: 6px;
   padding: 0;
-  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
-  line-height: 20px;
+  font-size: calc(var(--dsh-content-font-size-secondary, 13px) - 1px);
+  line-height: calc(20px + var(--dsh-content-font-delta-secondary, 0px));
   letter-spacing: -0.04px;
 }
 
-/* F19 · 状态项图标：opencode 导航图标 16px */
+/* F19 · 状态项图标：DSH 原版就是 14px（`TQ0rwa_pill svg{width:14px;height:14px}`）。
+   我之前按 opencode 的导航图标放大到 16px，是错的。 */
 html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] [data-composer-stat] svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   flex: none;
 }
 
@@ -1157,8 +1165,8 @@ html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-compose
   border-radius: var(--dsw-radius-md);
   gap: 6px;
   padding: 0;
-  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
-  line-height: 20px;
+  font-size: calc(var(--dsh-content-font-size-secondary, 13px) - 1px);
+  line-height: calc(20px + var(--dsh-content-font-delta-secondary, 0px));
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
