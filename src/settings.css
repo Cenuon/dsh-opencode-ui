@@ -223,9 +223,12 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
   border-bottom: none;
 }
 
+/* 行标题：参考图里标题明显比说明文字重（opencode 是 530，DSH 没有这一档，
+ * 取 500 近似）。v1 写成 400，标题和说明同重，整页读起来是平的 —— 实测
+ * title 的 fw 确实是 400，这是「不像参考图」的第二大来源。 */
 [data-shortcut-modal="settings"] :is([class$="_title"], [class*="_title "]) {
   font-size: var(--ocui-fs-base);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 20px;
 }
 
@@ -234,6 +237,30 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
   font-size: var(--ocui-fs-base);
   font-weight: 400;
   line-height: 20px;
+}
+
+/* ---------------------------------------------------------------------------
+ * 5a. 行内下拉控件                                       [C-46 的真正对象]
+ *     「灰方块」的真身。实测（DevTools）：tag BUTTON、cls `_58QN-a_selector`、
+ *     background rgb(242,242,242)、height 36px、font-size 14px、padding 0 14px、
+ *     gap 12px、radius 6px。它是**设置页插件自己的类**，不是 primitives 的
+ *     `_input_` —— v1/v2 两轮针对 `_input_` 写的规则一次都没命中过。
+ *     参考图里下拉是**无框文字 + 箭头**：去底、去内边距、收到 28px / 13px。
+ * ------------------------------------------------------------------------ */
+
+[data-shortcut-modal="settings"] :is([class$="_selector"], [class*="_selector "]) {
+  height: 28px;
+  padding: 0;
+  gap: 8px;
+  background: transparent;
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-base);
+  line-height: 20px;
+  transition: background-color 85ms ease-out, color 85ms ease-out;
+}
+
+[data-shortcut-modal="settings"] :is([class$="_selector"], [class*="_selector "]):hover {
+  background: var(--dsw-alias-interactive-bg-hover);
 }
 
 /* 卡片：边框宽度收敛到 0.5px 发丝线（颜色由 token 层负责）。 */
