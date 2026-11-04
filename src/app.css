@@ -445,6 +445,32 @@ html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"]
   max-width: none;
 }
 
+/* D16 · 隐藏会话顶部的标签行（对话 / 轨迹）。
+ *
+ * 用户要求「只想要蓝色卡片区域，不想要顶部的红色区域」—— 红框里就是 _tabs。
+ *
+ * 后缀命中检查（这轮起养成的习惯，写 [class$=] 前必做）：
+ *   _tabs    → 全 asar 只有 **1 个模块**（kiGsTW，会话根）✓ 可以裸用后缀
+ *   _tab     → 1 个模块 ✓
+ *   _header  → **4 个模块** ✗ 不能裸用，必须加判别条件
+ * 所以第一条直接用后缀；第二条用 `:has(_tabs)` 把范围锁到「含标签行的那个顶栏」
+ * 也就是会话顶栏。特异度 (0,2,2) 高于 DSH 的 `.kiGsTW_header` (0,1,0)。
+ *
+ * ⚠️ 代价：隐藏后**无法再切到「轨迹」页**。要恢复就删掉下面第一条规则。
+ *
+ * 另外 DSH 只在 **DOM 里没有** _tabs 时才收顶栏高度：
+ *   .kiGsTW_header:where(:not(:has(.kiGsTW_tabs))){min-height:0;padding-bottom:10px}
+ * 而 display:none **不影响 :has()**，所以顶栏会留一条 76px 的空带 ——
+ * 高度必须手动补上。 */
+html body :is([class$="_tabs"], [class*="_tabs "]) {
+  display: none;
+}
+
+html body :is([class$="_header"], [class*="_header "]):has(:is([class$="_tabs"], [class*="_tabs "])) {
+  min-height: 0;
+  padding-bottom: 10px;
+}
+
 
 /* ==========================================================================
    E. 消息区（清单 §E，20 条）
