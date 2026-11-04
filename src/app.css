@@ -665,6 +665,38 @@ html body [data-changed-files] :is([class$="_tile"], [class*="_tile "]) {
   border-radius: var(--dsw-radius-md);
 }
 
+/* 表头压矮：60px -> 44px。
+ *
+ * 实测（缩放 2.0）：表头 120 img px = 60 CSS px，而一行只有 32px —— 表头
+ * 快赶上两行了。它压不下来的原因是里面塞了个 **40×40** 的图标方块
+ * （`.vdszpW_tile{width:40px;height:40px}`）加上下各 8px padding = 56px。
+ * 所以必须**连方块一起缩**：40 -> 32，padding 8 -> 6，44 = 32 + 12。 */
+html body [data-changed-files] :is([class$="_header"], [class*="_header "]) {
+  height: 44px;
+  padding: 6px 10px;
+}
+
+html body [data-changed-files] :is([class$="_tile"], [class*="_tile "]) {
+  width: 32px;
+  height: 32px;
+}
+
+/* 方块里的图标跟着缩，否则会顶破 32px 的方块 */
+html body [data-changed-files] :is([class$="_tile"], [class*="_tile "]) svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* 文件行之间加分隔线。
+ * DSH 只在列表顶部画了一条（`.vdszpW_list{border-top:.5px solid ...}`），
+ * 行与行之间没有任何线。
+ * 两条选择器都写上：列表项可能是 _list 的直接子元素，也可能是 _row 相邻
+ * 兄弟，不写死结构。 */
+html body [data-changed-files] :is([class$="_list"], [class*="_list "]) > :not(:first-child),
+html body [data-changed-files] :is([class$="_row"], [class*="_row "]) + :is([class$="_row"], [class*="_row "]) {
+  border-top: 0.5px solid var(--dsw-alias-border-l2);
+}
+
 /* E6 · 不做。清单要求把 markdown 体 gap 16→20px，但 AssistantMarkdown 的
    _body 只能靠「祖先 + 类名」双重限定才能避开 _body 的另外 6 个模块
    （r52wTW / ft5itq / UHhYua / rK8Ova …），而它的祖先链里没有稳定语义锚点，
