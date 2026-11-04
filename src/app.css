@@ -521,6 +521,36 @@ html body [data-width-handle] {
   width: 10px;
 }
 
+/* E1d · 会话导轨（turn navigator）的显示阈值：900px -> 640px。
+ *
+ * DSH 出厂：
+ *   @container (width <= 900px){ ._4if9eW_frame{display:none} }
+ * 容器是 `._4if9eW_slot`（声明了 container-type:inline-size），
+ * 而该 slot 是 `position:absolute;left:0;right:0` + `padding-inline:
+ * calc(side-clearance + 16px)` —— 量的是**内容盒**，所以要减掉左右 padding：
+ *   slot 宽度 = 对话区宽度，padding = (16+16)*2 = 64px
+ *   触发条件：对话区宽度 - 64 <= 900  →  对话区宽度 <= 964px
+ *
+ * 用户要求把阈值降到 640px。**改不了 DSH 的那条 @container**，所以用两步：
+ *   1) 用更高特异度的普通规则把 display 恢复成 block（容器查询不增加特异度，
+ *      所以 (0,2,2) 的普通规则能压过 (0,1,0) 的容器查询规则）
+ *   2) 再自己写一条 640px 的容器查询把它藏回去
+ * 效果：641~900px 之间重新显示，<=640px 仍然隐藏。
+ *
+ * 选择器用 `[data-conversation-scroll]` 限定，避免误伤设置页那个同样是
+ * `nav` 的左侧导航（它的布局是 flex，被改成 block 会塌）。
+ * 锚点 `nav[aria-label]` 来自源码：`jsx("nav",{ className: frame,
+ * "aria-label": t("chat.turnNavigation.label") })`。 */
+html body [data-conversation-scroll] nav[aria-label] {
+  display: block;
+}
+
+@container (width <= 640px) {
+  html body [data-conversation-scroll] nav[aria-label] {
+    display: none;
+  }
+}
+
 /* E2 · 用户气泡：去掉淡蓝底与大圆角，改 opencode 一级层 + 0.5px 发丝边框。
    不写 font-size（内容字号是用户偏好）。
    行高用 calc(20px + delta)：保留用户字号增量，只把比例收到 opencode 的 20px。 */
