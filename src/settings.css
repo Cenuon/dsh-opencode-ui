@@ -46,9 +46,17 @@ body > :is([class$="_overlay"], [class*="_overlay "]) > [data-shortcut-modal="se
   --ocui-fs-base: calc(13px + var(--dsh-content-font-delta, 0px));
   --ocui-fs-sm: calc(12px + var(--dsh-content-font-delta-secondary, 0px));
 
-  width: 100%;
+  /* ★ 整个面板限宽并居中，而不是内容列单独居中。
+   *
+   * 历史：先试过「全屏 + 内容列 640 居中」——结果导航钉在窗口最左、内容被推到
+   * 中间，两者裂开 600px，用户反馈「旁边要挪过来」。
+   * 正确做法是把**导航 + 内容当作一个整体**限制宽度再居中：
+   *   导航 260 + 间距 128 + 内容 640 + 右侧留白 64 = 1092
+   * overlay 本身是 justify-content:center 的 flex，限宽后自动居中。 */
+  width: min(1092px, 100%);
   height: 100%;
-  max-width: none;
+  max-width: 1092px;
+  margin-inline: auto;
   border-radius: 0;
   box-shadow: none;
   letter-spacing: -0.04px;
@@ -191,15 +199,17 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
 [data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 24px 24px 32px;
+  align-items: flex-start;
+  /* 左 128 = 导航与内容之间的间距；右 64 = 面板右侧留白。
+     两者相加 192，正好让 1092 - 260(导航) - 192 = 640 的内容列填满可用宽度。 */
+  padding: 24px 64px 32px 128px;
 }
 
 [data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) > *,
 [data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) > [data-slot] > * {
   width: 100%;
   max-width: 640px;
-  margin-inline: auto;
+  margin-inline: 0;
 }
 
 /* ---------------------------------------------------------------------------
