@@ -27,7 +27,7 @@ ctx.theme.overrideTokens('@local/opencode-ui', {
 ## 安装
 
 ```
-plugin_manager  action=install_bundle  target=/Users/cenuon/Documents/默认项目/dsh-opencode-ui
+plugin_manager  action=install_bundle  target=~/dsh-opencode-ui
 ```
 
 安装后刷新页面生效。

@@ -730,7 +730,7 @@ DSH 给**所有元素**套了 `superellipse(1.5)` 超椭圆平滑。opencode 用
 ## 10. 复现方法
 
 ```bash
-cd /Users/cenuon/Documents/默认项目/.research-opencode-ui
+cd ~/Documents/默认项目/.research-opencode-ui
 
 # 1) 403 个 --dsw-* 清单（分类）
 grep -o -- '--dsw-[a-z0-9-]*' theme-client.js | sort -u

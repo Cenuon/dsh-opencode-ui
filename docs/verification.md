@@ -100,7 +100,7 @@ SYNTAX OK
 "dsh": { "profile": { "bundles": [ ..., "@local/opencode-ui" ] } },
 "dependencies": {
   "@deepseek-ai/dsh-subagent-claude-code": "0.2.1-rc.3",
-  "@local/opencode-ui": "link:/Users/cenuon/Documents/默认项目/dsh-opencode-ui"
+  "@local/opencode-ui": "link:~/dsh-opencode-ui"
 }
 ```
 
@@ -108,7 +108,7 @@ SYNTAX OK
 
 ```
 $ readlink -f ~/.dsh/profiles/desktop/node_modules/@local/opencode-ui
-/Users/cenuon/Documents/默认项目/dsh-opencode-ui      ← 正确
+~/dsh-opencode-ui      ← 正确
 ```
 
 **2c. 活动插件树**（`plugin_manager action=list_plugins`，216 条，翻完三页）

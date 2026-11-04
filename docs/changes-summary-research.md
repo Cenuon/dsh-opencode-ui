@@ -9,7 +9,7 @@
 >
 > 复现命令（shell 的 `ls`/`cat`/`rg` 打不开 asar，必须用脚本）：
 > ```bash
-> cd /Users/cenuon/Documents/默认项目/.research-opencode-ui
+> cd ~/Documents/默认项目/.research-opencode-ui
 > node asar.mjs cat   "dsh/node_modules/@deepseek-ai/dsh-client-ui-deliverables/lib/client.js" > /tmp/deliverables-client.js
 > node asar.mjs cat   "dsh/node_modules/@deepseek-ai/dsh-workspace-changes/lib/index.js"          > /tmp/wsc-host.js
 > node asar.mjs cat   "dsh/node_modules/@deepseek-ai/dsh-client-ui-settings/lib/index.js"         > /tmp/ui-settings-host.js
@@ -26,7 +26,7 @@
 | 为什么有时不出现 | 主因是 ①（本轮确实没记录到任何文件改动 → Host 干脆不发事件）与 ②（开关被关）；次因是 ③（Host 重启/会话销毁 → 404）与 ④（后一次空记录覆盖了前一次） | 【实测读源码】+【实测读日志】 |
 | i18n key | 命名空间 `deliverables`：`changes.title` = `已编辑 {count} 个文件` / `Edited {count} files`；行内计数 `changes.added` = `+{count}`、`changes.deleted` = `-{count}` | 【实测读源码】 |
 | 有没有开关 | **有，而且只有一个**：设置 → 通用 → **「显示代码工作视图」**，存储键 `ui-settings.enabled`（布尔，默认 `true`） | 【实测读源码】 |
-| 本机当前值 | **`true`（截至 2026-11-04 14:40:30，会变动——见 §4.5）**。此前为 `false`：`/Users/cenuon/.dsh/profiles/desktop/cordis.patch.yml` 第 19–22 行的 `ui-settings.enabled` | 【实测读配置】+【实测读源码】 |
+| 本机当前值 | **`true`（截至 2026-11-04 14:40:30，会变动——见 §4.5）**。此前为 `false`：`~/.dsh/profiles/desktop/cordis.patch.yml` 第 19–22 行的 `ui-settings.enabled` | 【实测读配置】+【实测读源码】 |
 | 纯 CSS 能否救 | **不能。** 卡片不存在时 React 根本没有挂载 DOM 节点；插件 CSS 里也没有任何 `display:none` 可被反隐藏 | 【实测读源码】 |
 | 基于本轮还是整个工作区 | **本轮 top-level turn 的增量**（turn 开始 / 结束两次 git 快照做 diff），不是整个工作区状态 | 【实测读源码】 |
 | 截图那行 `dbx +1 -1` | 极可能是工作区里的**嵌套 git 仓库** `dbx/`（自带 `.git`）被记成 gitlink；`git diff-tree --numstat` 对 gitlink 的输出实测就是 `1  1  dbx`。**在 `dbx/` 内部改文件，卡上永远只显示这一行，看不到具体文件** | 【实测读源码】+【实测读 git 行为】+【推测】识别 |
@@ -332,10 +332,10 @@ function eligible(session) {
 
 ### 2.3 实测日志证据（这是最有力的一条）
 
-**【实测读日志】** 本工作区（`/Users/cenuon/Documents/默认项目`）的历史会话日志里，**确实存在「同一会话内部分轮次有事件、部分轮次没有」的现象**：
+**【实测读日志】** 本工作区（`~/Documents/默认项目`）的历史会话日志里，**确实存在「同一会话内部分轮次有事件、部分轮次没有」的现象**：
 
 ```bash
-cd "/Users/cenuon/.dsh/sessions/--Users-cenuon-Documents-~9ED8~8BA4~9879~76EE--/session-9997a909-b2aa-4f72-b37a-fddf46c109db"
+cd "~/.dsh/sessions/--Users-cenuon-Documents-~9ED8~8BA4~9879~76EE--/session-9997a909-b2aa-4f72-b37a-fddf46c109db"
 zstd -dc session.v4.jsonl.zstd | grep '"type":"workspace/changes"'
 ```
 
@@ -589,7 +589,7 @@ ctx.slots.inject("settings.general.item", () => ctx.slots.register({
 **方式 A（推荐，等价于用户点设置页开关）** —— 改 profile patch：
 
 ```yaml
-# /Users/cenuon/.dsh/profiles/desktop/cordis.patch.yml
+# ~/.dsh/profiles/desktop/cordis.patch.yml
 - id: ui-settings
   name: "@deepseek-ai/dsh-client-ui-settings"
   config:
@@ -600,7 +600,7 @@ ctx.slots.inject("settings.general.item", () => ctx.slots.register({
 
 ### 4.5 ⚠️ 本机当前状态：**`false`**
 
-**【实测读配置】** `/Users/cenuon/.dsh/profiles/desktop/cordis.patch.yml`：
+**【实测读配置】** `~/.dsh/profiles/desktop/cordis.patch.yml`：
 
 ```yaml
 19: - id: ui-settings
@@ -760,7 +760,7 @@ children: [ changes !== null && jsx(ChangedFiles, { ... }), ... ]
 | 是否等于 `git status` | **不等于**。是 `diff-tree(turnStartTree, turnEndTree)`，即「本轮增量」 | 【实测读源码】 |
 | 仓库 index / objects / refs | 只读；快照写进 Session 私有临时对象目录（`GIT_OBJECT_DIRECTORY` + `GIT_ALTERNATE_OBJECT_DIRECTORIES`） | 【实测读源码】README |
 | 无 git / 非仓库 | 退化为「只列 file-tool 编辑（`write` / `edit` / 可变 `str_replace_editor`）」，**shell 改动不入卡** | 【实测读源码】README |
-| 用户当前工作区 | **是 git 仓库**（`git rev-parse --show-toplevel` → `/Users/cenuon/Documents/默认项目`），所以 shell 改动会被 git 快照覆盖 | 【实测读配置】 |
+| 用户当前工作区 | **是 git 仓库**（`git rev-parse --show-toplevel` → `~/Documents/默认项目`），所以 shell 改动会被 git 快照覆盖 | 【实测读配置】 |
 | submodule / 嵌套仓库 | 记为 gitlink，内部改动不出现 | 【实测读源码】README |
 | `/tmp` 下文件 | 排除（除非在仓库内） | 【实测读源码】README |
 | 生命周期 | 摘要只活在 Host 内存里，Session 销毁 / Host 重启即失效 | 【实测读源码】README + `records` Map |
@@ -785,9 +785,9 @@ const summary = useChangesSummary((value) =>
 **【实测读文件】** 用户工作区里存在嵌套仓库：
 
 ```bash
-$ ls -la /Users/cenuon/Documents/默认项目/dbx/
+$ ls -la ~/Documents/默认项目/dbx/
 drwxr-xr-x  .git            ← dbx/ 自己就是一个 git 仓库
-$ cd /Users/cenuon/Documents/默认项目 && git status --porcelain dbx
+$ cd ~/Documents/默认项目 && git status --porcelain dbx
 ?? dbx/
 ```
 
@@ -829,7 +829,7 @@ git diff-tree -r -M --numstat $T1 $T2
 ```
 
 **结论（【实测读源码】+【实测读 git 行为】，截图识别部分为【推测】）**：
-用户截图里那一行 **`📄 dbx  +1 -1`** 极可能就是 `/Users/cenuon/Documents/默认项目/dbx/` 这个嵌套仓库的 **gitlink 条目**。
+用户截图里那一行 **`📄 dbx  +1 -1`** 极可能就是 `~/Documents/默认项目/dbx/` 这个嵌套仓库的 **gitlink 条目**。
 这意味着一个对用户很关键的实际后果：
 
 > **在 `dbx/` 目录内部修改文件时，汇总卡上只会出现一行 `dbx +1 -1`，永远不会列出里面被改的具体文件。**
@@ -855,14 +855,14 @@ git diff-tree -r -M --numstat $T1 $T2
 | 11 | 类名前缀 `vdszpW_*`、锚点 `[data-changed-files]` | `…/lib/client.js:1299-1328`、`1399` | 【实测读源码】 |
 | 12 | 卡片 CSS 不在 web-frontend，是运行时注入 | `client.js:1302-1308`；`index-BNyAYEM7.css` 0 命中 | 【实测读源码】 |
 | 13 | 组合里两个包都已挂载（无 config） | `dsh/node_modules/@deepseek-ai/dsh-web-app/cordis.patch.yml:349-358` | 【实测读源码】 |
-| 14 | 本机 profile 把开关设为 `false` | `/Users/cenuon/.dsh/profiles/desktop/cordis.patch.yml:19-22` | 【实测读配置】 |
-| 15 | 该 profile 正是桌面端在用的 | `ps aux` → `dsh-desktop-host … /Users/cenuon/.dsh/profiles/desktop` | 【实测读进程】 |
+| 14 | 本机 profile 把开关设为 `false` | `~/.dsh/profiles/desktop/cordis.patch.yml:19-22` | 【实测读配置】 |
+| 15 | 该 profile 正是桌面端在用的 | `ps aux` → `dsh-desktop-host … ~/.dsh/profiles/desktop` | 【实测读进程】 |
 | 16 | 同一会话内 turn 10/11/15 无事件，且这些轮次没有 write/edit | `~/.dsh/sessions/--…~9ED8~8BA4~9879~76EE--/session-9997a909-…/session.v4.jsonl.zstd` | 【实测读日志】 |
 | 17 | 用户截图文字「N 个文件已更改」在当前 bundle 中不存在 | 全 asar 扫描 `"个文件已更改"` → 0 命中 | 【实测读源码】 |
 | 18 | `ui-settings.enabled=false` 会让卡片**完全**消失 | 由 #4+#5+#3 推导，未在运行时观测 | 【推测】 |
 | 19 | 14:09 那次 `enabled: true → false` 的改动来自设置页开关或外部流程 | 会话事件流无对应 edit/write | 【推测】 |
 | 20 | 截图那张卡就是本卡片 | 结构特征（计数 + `+A -B` + 行 + ⌄ 折叠）唯一匹配 | 【推测】 |
-| 21 | `dbx/` 是工作区内的嵌套 git 仓库（自带 `.git`） | `ls -la /Users/cenuon/Documents/默认项目/dbx/`、`git status --porcelain dbx` → `?? dbx/` | 【实测读文件】 |
+| 21 | `dbx/` 是工作区内的嵌套 git 仓库（自带 `.git`） | `ls -la ~/Documents/默认项目/dbx/`、`git status --porcelain dbx` → `?? dbx/` | 【实测读文件】 |
 | 22 | 嵌套仓库在 `diff-tree --numstat` 里就是 `1  1  <name>`（= `+1 -1`） | `/tmp` 一次性沙盒仓库复现（见 §6.4），未触碰用户仓库 | 【实测读 git 行为】 |
 | 23 | 嵌套仓库内部改动**不会**出现在卡上（按 gitlink 记录） | `dsh-workspace-changes/README.md` + `lib/index.js:856-860` 的 gitlink 过滤 | 【实测读源码】 |
 
@@ -878,7 +878,7 @@ git diff-tree -r -M --numstat $T1 $T2
 本文引用的**全部 58 处行号**已用脚本逐条机器校验（读取真实文件对应行并断言包含预期片段），当前结果 **58/58 通过、0 处不符**。脚本：`.research-opencode-ui/verify-lines.mjs`（只读，可重跑）：
 
 ```bash
-cd /Users/cenuon/Documents/默认项目/.research-opencode-ui && node verify-lines.mjs
+cd ~/Documents/默认项目/.research-opencode-ui && node verify-lines.mjs
 ```
 
 Lead 复核后我更正了 5 处引用偏差（均为 off-by-one / 范围不准，已修正）：

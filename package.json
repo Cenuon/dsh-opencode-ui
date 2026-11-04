@@ -1,7 +1,7 @@
 {
-  "name": "@local/opencode-ui",
+  "name": "dsh-opencode-ui",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "type": "module",
   "description": "opencode console visual language for the DSH Web UI — settings page and main interface.",
   "exports": {
@@ -32,5 +32,21 @@
         "@deepseek-ai/dsh-client-ui-conversation"
       ]
     }
-  }
+  },
+  "license": "MIT",
+  "author": "Cenuon",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cenuon/dsh-opencode-ui.git"
+  },
+  "homepage": "https://github.com/Cenuon/dsh-opencode-ui#readme",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "opencode",
+    "theme",
+    "plugin",
+    "cordis",
+    "ui"
+  ]
 }
