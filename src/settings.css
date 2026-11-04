@@ -562,6 +562,13 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
   transition: background-color 85ms ease-out;
 }
 
+/* 关态轨道：出厂用 --dsw-alias-border-l3，实测 rgba(0,0,0,.2)，在浅色下偏深
+ * （叠在卡片上是 #c8c8c8）。参考图的关态是很浅的灰，改用一级层的 #f2f2f2。
+ * 只写关态，别碰开态 —— 开态实测 rgb(59,92,246)，正是 token 层给的强调蓝。 */
+[data-shortcut-modal="settings"] button[role="switch"][aria-checked="false"] {
+  background: var(--dsw-alias-bg-layer-3);
+}
+
 [data-shortcut-modal="settings"] button[role="switch"] > span {
   width: 12px;
   height: 12px;
@@ -570,6 +577,40 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
 
 [data-shortcut-modal="settings"] button[role="switch"][aria-checked="true"] > span {
   transform: translate(12px);
+}
+
+/* ---------------------------------------------------------------------------
+ * 7b. 外观页的主题方块 + 数字步进器
+ *     两个都是 DevTools 实测出来的、v1 完全没覆盖的控件：
+ *       - `RrNL-q_themeCube` 选中项 background #f2f2f2 + border #adb2b8
+ *       - `KaH-Nq_stepper`   background #f2f2f2、高 36px
+ *     参考图里选中态是**强调色描边**而不是灰块，数字输入是**白底发丝边框**。
+ * ------------------------------------------------------------------------ */
+
+[data-shortcut-modal="settings"] :is([class$="_themeCube"], [class*="_themeCube "]) {
+  padding: 16px 12px;
+  gap: 6px;
+  font-size: var(--ocui-fs-base);
+  border-radius: var(--dsw-radius-md);
+  transition: background-color 85ms ease-out, border-color 85ms ease-out;
+}
+
+[data-shortcut-modal="settings"] :is([class$="_themeCube"], [class*="_themeCube "])[class*="_selected"] {
+  background: var(--dsw-alias-interactive-bg-hover);
+  border-color: var(--dsw-alias-state-business-primary);
+}
+
+[data-shortcut-modal="settings"] :is([class$="_stepper"], [class*="_stepper "]) {
+  height: 28px;
+  background: transparent;
+  border: 0.5px solid var(--dsw-alias-border-l1);
+  border-radius: var(--dsw-radius-md);
+}
+
+/* 步进器的上下箭头：出厂是半透明近白（color(srgb .98 .98 .98 / .75)），
+ * 在浅色卡片上等于没有底，深色下又会发白。直接透明，交给 hover 反馈。 */
+[data-shortcut-modal="settings"] :is([class$="_arrow"], [class*="_arrow "]) {
+  background: transparent;
 }
 
 /* 徽标（Tag）：同样去胶囊，改用 6px 圆角体系。 */
