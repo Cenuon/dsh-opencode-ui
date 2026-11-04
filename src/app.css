@@ -762,12 +762,25 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
  * overflow-x 滚动（DSH 本来就给了 `max-width:100%; overflow-x:auto`）。
  *
  * 特异度：本规则 (0,2,2) > DSH 的 `.XNZzAa_body .md-table-wide` (0,2,0)，无需 !important。
- * `.md-table-wide` 是组件源码里写死的语义类，不随版本变。 */
+ * `.md-table-wide` 是组件源码里写死的语义类，不随版本变。
+ *
+ * ★ 什么表会走出血？源码里的判定（markdown 表格渲染函数）：
+ *     l = (align===null ? 表头单元格数 : align.length) >= 4 && !inBlockquote
+ *     className: he(tableScroll, l ? "md-table-wide" : "tableFill")
+ *   即**列数 >= 4 才用 _tableScroll_ + md-table-wide，否则用 _tableFill_**。
+ *   这就是「同一个会话里只有某张表有问题」的原因 —— 别的表列数不够。
+ *   也解释了更早那个谜团：DSH 的 `._tableScroll_ th/td{padding:10px 16px}`
+ *   对 <4 列的表不生效，因为那些表根本不带 _tableScroll_。
+ *
+ * ★★ 这里**不能写 padding-left: 0**。外壳（E5c）靠 `padding: 2px` 给
+ *    `box-shadow: inset 0 0 0 0.5px` 留出内缩空间；左边距一旦归零，
+ *    tbody 的 background 就会盖住那条 0.5px 发丝线，**左边框看起来缺了一段**
+ *    （用户反馈）。DSH 的 `.md-table-wide{padding-left:var(--dsh-table-lead)}`
+ *    特异度只有 (0,2,0)，本来就被 E5c 的 `padding: 2px` 压住，不用再声明。 */
 html body [data-conversation-scroll] .md-table-wide {
   width: 100%;
   max-width: 100%;
   margin-left: 0;
-  padding-left: 0;
 }
 
 /* E5g · 代码块内边距：用户两次反馈留白太多。
