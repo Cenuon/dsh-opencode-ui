@@ -189,24 +189,29 @@ html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]
   color: var(--dsw-alias-label-primary);
 }
 
-/* B11 · 面板列表：opencode 列表 gap:4px、区块间距 32px */
+/* B11 · 面板列表：区块间距与行间距。
+ *
+ * ★ 这里原本写的是 `gap:4px; margin-bottom:32px` —— 比 DSH 原生的
+ *   `.kB3qhq_panelList{gap:2px;margin-bottom:8px}` 大得多，导致侧栏各区块
+ *   （插件/自动化任务/更多、工作区、…）之间被拉得很开，用户反馈「都紧凑一点」。
+ *   改回比原生更紧一档：gap 1px、区块间距 6px。 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_panelList"], [class*="_panelList "]) {
-  gap: 4px;
-  margin-bottom: 32px;
+  gap: 1px;
+  margin-bottom: 6px;
 }
 
 /* B12 · 面板行：直接对齐 opencode 左导航项实测值
    （height:28px; gap:8px; border-radius:6px; padding:0 6px; 13px/440）。
    排除折叠态（折叠态是 36×36 居中图标）。 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]) {
-  min-height: 28px;
+  min-height: 26px;
   border-radius: var(--dsw-radius-md);
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 0 6px;
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 400;
-  line-height: 20px;
+  line-height: 18px;
   letter-spacing: -0.04px;
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
