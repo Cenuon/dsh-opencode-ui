@@ -200,15 +200,6 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
   margin-inline: 0;
 }
 
-/* 设置面板内的「次级嵌套面」收敛到卡片面。
- * DSH 给行内控件（下拉、次要按钮）套的是 --dsw-alias-bg-layer-3 的灰底，
- * 实测填充 #f2f2f2，在卡片上读作一个个灰色方块；参考图里这些控件是**无框的**
- * 文字 + 箭头。把这一层在面板作用域内改成卡片面，控件就融进卡片了。
- * 只在设置面板内生效，不影响应用其它地方的嵌套面。 */
-[data-shortcut-modal="settings"] {
-  --dsw-alias-bg-layer-3: var(--dsw-alias-bg-layer-1);
-}
-
 /* ---------------------------------------------------------------------------
  * 5. 卡片与行                                            [C-27 ~ C-37]
  * ------------------------------------------------------------------------ */
@@ -330,6 +321,47 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
   background-position: right 8px center;
   background-repeat: no-repeat;
   background-size: 12px 12px;
+}
+
+/* ---------------------------------------------------------------------------
+ * 5b. 表单控件（primitives 的 SettingsValueField）        [C-46, C-47]
+ *     v1 漏了这一层：settings.css 里对 primitives 的 _input_ 一条规则都没有，
+ *     所以下拉/输入框一直是 DSH 出厂样子 —— height:34px、0.5px 边框、
+ *     background:--dsw-alias-bg-layer-3（实测填充 #f2f2f2）。
+ *     在卡片上那读作一个个灰色方块，而参考图里下拉是**无框文字 + 箭头**、
+ *     输入框是白底 + 发丝边框。这是「不像参考图」的最大来源。
+ * ------------------------------------------------------------------------ */
+
+[data-shortcut-modal="settings"] :is([class^="_input_"], [class*=" _input_"]) {
+  height: 28px;
+  border-radius: var(--dsw-radius-md);
+  font-size: var(--ocui-fs-base);
+  line-height: 20px;
+}
+
+/* 非文本控件（原生 select、按钮式下拉等）→ 无框无底，读作纯文字 + 箭头。
+ * 用 :not(input):not(textarea) 区分，而不是写死元素名：DSH 的下拉可能是
+ * <select> 也可能是别的元素，这样两种都覆盖，文本输入框则走下面一条。 */
+[data-shortcut-modal="settings"] :is([class^="_input_"], [class*=" _input_"]):not(input):not(textarea),
+[data-shortcut-modal="settings"] :is([class$="_selectInput"], [class*="_selectInput "]) {
+  background-color: transparent;
+  border-color: transparent;
+  padding-left: 0;
+}
+
+/* 文本 / 数字输入 → 白底 + 发丝边框（参考图的输入框就是这个样子） */
+[data-shortcut-modal="settings"] input:is([class^="_input_"], [class*=" _input_"]),
+[data-shortcut-modal="settings"] textarea:is([class^="_input_"], [class*=" _input_"]) {
+  background-color: var(--dsw-alias-bg-base);
+  border: 0.5px solid var(--dsw-alias-border-l1);
+  padding: 0 8px;
+}
+
+/* opencode 唯一用彩色的地方是聚焦边框，且**没有光晕** */
+[data-shortcut-modal="settings"] :is([class^="_input_"], [class*=" _input_"]):focus-visible {
+  outline: none;
+  border-color: var(--dsw-alias-state-business-primary);
+  box-shadow: none;
 }
 
 /* ---------------------------------------------------------------------------
