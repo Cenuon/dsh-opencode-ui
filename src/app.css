@@ -569,9 +569,14 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
   border-bottom: none;
 }
 
-/* 数据行：48px、次级文字色、440 字重 */
+/* 数据行：行高 36px、次级文字色、440 字重。
+ *
+ * ★ 行高不是照抄 console 的 h-12(48px)。用户两次反馈「行高太高」，而他自己
+ *   认可的参考表（菜单项/实际动作那张）实测行高是 73 img px ÷ 2.0 = 36.5px。
+ *   所以取 36px —— 以用户认可的参考为准，而不是以 console 的默认值为准。
+ *   想再调就改这一个数：36 → 32 更紧、40 更松。 */
 html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) td {
-  height: 48px;
+  height: 36px;
   color: var(--dsw-alias-label-secondary);
   font-size: calc(14px + var(--dsh-content-font-delta, 0px));
   font-weight: 440;
