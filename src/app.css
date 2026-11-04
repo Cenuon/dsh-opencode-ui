@@ -505,82 +505,112 @@ html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markd
   margin-top: 0;
 }
 
-/* E5c · Markdown 表格：对齐用户给的参考图，并把字号统一到正文。
+/* E5c · Markdown 表格：对齐 OpenCode Console 的 data-table。
  *
- * 参考图实测：表头填充 #fafafa、表体 #fff、外框 0.5px 发丝线 + 6px 圆角、
- * 行间 0.5px 分隔、无竖线。
- * DSH 出厂只给了 th/td 的 border-bottom（`._tableScroll_ table th/td`），
- * 没有外框、没有表头底色；字号则是 13px，比正文小一档。
- * 这里显式补齐外框与表头底色，并把字号拉回正文。 */
+ * 规格来自用户给的参考页 https://opencode.ai/console/<wrk>/models ——
+ * 我取到了它的组件源码 `assets/data-table-D39NCcLr.js`，样式是明文的：
+ *
+ *   shell: rounded-md bg-surface p-0.5
+ *          shadow-[inset_0_0_0_0.5px_var(--v2-border-border-muted)]
+ *   main : w-full border-separate border-spacing-0 text-[0.8125rem] tabular-nums
+ *          [&_tbody]:bg-background
+ *   edge : h-8 text-left             ← 表头行高 32px
+ *   row  : h-12 transition-colors    ← 数据行高 48px
+ *   sep  : [&:not(:last-child)>td]:border-b border-border-muted
+ *   hover: hover:bg-surface
+ *   单元格: px-3（水平 12px）
+ *
+ * 从同一份 CSS 解析出的 --v2-* 实际色值：
+ *   bg-surface     = grey-100  #fafafa / grey-1000 #242424
+ *   bg-background  = grey-50   #fff    / grey-1100 #161616
+ *   border-muted   = alpha-dark-8 #00000014 / alpha-light-8 #ffffff14
+ *   text-muted     = grey-600  gray(#808080)  两套同值
+ *   text-secondary = grey-500  #aeaeae / grey-700 #5c5c5c
+ * 这五组和本插件 tokens.json 里的 --dsw-alias-* **逐个相等**，所以直接引用 token。
+ *
+ * ★ 「灰色表头」的成因：表头本身**没有底色**，是外壳的 bg-surface 透出来的；
+ *   而 tbody 显式设了 bg-background，所以数据行是白的。之前我以为是表头自己
+ *   有填充色，还专门给 th 加了 background —— 那是错的。
+ *
+ * 字号沿用正文（用户要求「所有文字大小一致」），字重与字距按 console：
+ * 表头 530、正文 440、字距 -0.04px。 */
+
+/* 外壳：圆角 6px + 2px 内缩 + 0.5px **内阴影**发丝线（console 用的是 inset shadow，不是 border） */
 html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) {
-  border: 0.5px solid var(--dsw-alias-border-l2);
+  border: none;
   border-radius: var(--dsw-radius-md);
+  padding: 2px;
+  background: var(--dsw-alias-bg-layer-1);
+  box-shadow: inset 0 0 0 0.5px var(--dsw-alias-border-l1);
+}
+
+/* 表格本体：console 用 border-separate + spacing 0（collapse 会让圆角失效） */
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) table {
+  width: 100%;
+  max-width: none;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) tbody {
   background: var(--dsw-alias-bg-base);
 }
 
+/* 表头：32px 行高、灰色文字、530 字重、左对齐、无底色 */
 html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) th {
-  background: var(--dsw-alias-bg-layer-1);
-  color: var(--dsw-alias-label-secondary);
+  height: 32px;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
   font-size: calc(14px + var(--dsh-content-font-delta, 0px));
-  line-height: calc(22px + var(--dsh-content-font-delta, 0px));
-  border-bottom-color: var(--dsw-alias-border-l2);
-}
-
-html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) td {
-  font-size: calc(14px + var(--dsh-content-font-delta, 0px));
-  line-height: calc(22px + var(--dsh-content-font-delta, 0px));
-}
-
-/* 末行不画线，避免和外框叠成双线（和设置页那个「两条杠」是同一类问题）。 */
-html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) tbody tr:last-child td {
+  font-weight: 530;
+  line-height: 1;
+  letter-spacing: -0.04px;
   border-bottom: none;
 }
 
-/* E5d · 表格行高：单元格里的 <p> 带 16px 上下外边距。
- *
- * markdown 渲染器会把单元格内容包成 <p>，而 `._markdown_ p{margin:16px 0}`，
- * 表格单元格**不折叠外边距**，所以每行实际是 16 + 22 + 16 + padding 20 ≈ 74px；
- * 参考图的行高约 50px。去掉单元格内段落的边距，行高回到 22 + 20 = 42px 量级。 */
+/* 数据行：48px、次级文字色、440 字重 */
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) td {
+  height: 48px;
+  color: var(--dsw-alias-label-secondary);
+  font-size: calc(14px + var(--dsh-content-font-delta, 0px));
+  font-weight: 440;
+  line-height: calc(20px + var(--dsh-content-font-delta, 0px));
+  letter-spacing: -0.04px;
+  border-bottom: none;
+}
+
+/* 单元格：水平 12px（console 的 px-3），垂直交给行高 */
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) :is(th, td) {
+  padding: 0 12px;
+  vertical-align: middle;
+  text-align: left;
+}
+
+/* 单元格里的 <p> 带 16px 上下外边距会把行撑高，去掉 */
 html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) :is(th, td) > p {
   margin: 0;
 }
 
-/* E5e · 列宽：首列按内容收窄（用户反馈「表格好丑，特别是第一列」）。
- *
- * 上一版我把整张表改成 width:max-content，这是**错的** ——
- * `_tableScroll_` 是块级元素、占满整行，表格一缩，就变成「整行宽的外框里
- * 塞一张窄表」，比原来更丑。这里回退成撑满宽度。
- *
- * 真正的问题在于自动布局的分配规则：`width:100%` 时浏览器把**多余宽度均分**
- * 给各列，所以「元素」两个字也占了三分之一宽（实测约 530px）。
- * 只针对**首列**用 `width:1%` + nowrap 让它收缩到内容宽度，多余宽度自然
- * 落到后面的列 —— 这正是参考图里「菜单项」那一列的表现（约 170px，
- * 刚好等于该列最长内容的宽度）。 */
-html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) table {
-  width: 100%;
-  max-width: none;
+/* 分隔线：只有非末行画 1px（console 的 border-border-muted） */
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) tbody tr:not(:last-child) > td {
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
 }
 
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) tbody tr:last-child > td {
+  border-bottom: none;
+}
+
+/* 行悬停（console 的 hover:bg-surface） */
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) tbody tr:hover > td {
+  background: var(--dsw-alias-bg-layer-1);
+}
+
+/* 首列按内容收窄 —— 自动布局在 width:100% 时会把多余宽度**均分**给各列，
+ * 「元素」两个字也占三分之一宽。console 的表也是首列窄、其余列吃剩余。 */
 html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) :is(th, td):first-child {
   width: 1%;
   white-space: nowrap;
-}
-
-/* E5f · 单元格内边距：显式写死，不依赖 DSH 那条规则命中。
- *
- * DSH 的内边距写在 `._tableScroll_1ypvv_192 th/td{padding:10px 16px}` ——
- * 它要求元素**带 `_tableScroll_` 这个类**。但这张表用的是 `_tableFill_`，
- * 于是内边距压根没生效：实测首列文字距表格左边框只剩约 1px（用户反馈
- * 「第一列太靠近表格边缘」），行高也只有 padding 之外的部分撑着。
- *
- * 数值来源（实测对照）：
- *   参考图行高 73 img px ÷ 2.0 = 36.5px；你的截图 87 ÷ 1.86 ≈ 47px，偏高 10px。
- *   行高 = line-height 22px + 上下 padding。取 7px → 22 + 14 = 36px，对齐参考图。
- *   水平取 16px（DSH 原本的意图值），首列因此离开边框 16px。
- * 特异度 0-1-3 高于 DSH 的 0-1-1，无需 !important。 */
-html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) :is(th, td) {
-  padding: 7px 16px;
-  vertical-align: middle;
 }
 
 /* E6 · 不做。清单要求把 markdown 体 gap 16→20px，但 AssistantMarkdown 的
