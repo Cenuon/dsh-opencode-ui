@@ -536,6 +536,29 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
   border-bottom: none;
 }
 
+/* E5d · 表格行高：单元格里的 <p> 带 16px 上下外边距。
+ *
+ * markdown 渲染器会把单元格内容包成 <p>，而 `._markdown_ p{margin:16px 0}`，
+ * 表格单元格**不折叠外边距**，所以每行实际是 16 + 22 + 16 + padding 20 ≈ 74px；
+ * 参考图的行高约 50px。去掉单元格内段落的边距，行高回到 22 + 20 = 42px 量级。 */
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) :is(th, td) > p {
+  margin: 0;
+}
+
+/* E5e · 列宽按内容分配（用户反馈「表格好丑，特别是第一列」）。
+ *
+ * DSH 出厂有两条互相打架的规则：
+ *   ._tableScroll_ table{width:max-content}   ← 内容自适应（默认）
+ *   ._tableFill_   table{width:100%;max-width:none}  ← 撑满，覆盖前者
+ * 走 _tableFill_ 那条时，自动布局在内容短的情况下会把各列**均分** ——
+ * 实测「元素」两个字占了表格三分之一的宽度（约 530px），第一列大片留白。
+ * 这里恢复内容自适应，并用 max-width:100% 兜住不溢出（超宽时由外层
+ * _tableScroll_ 的 overflow-x 滚动，不会撑破布局）。 */
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) table {
+  width: max-content;
+  max-width: 100%;
+}
+
 /* E6 · 不做。清单要求把 markdown 体 gap 16→20px，但 AssistantMarkdown 的
    _body 只能靠「祖先 + 类名」双重限定才能避开 _body 的另外 6 个模块
    （r52wTW / ft5itq / UHhYua / rK8Ova …），而它的祖先链里没有稳定语义锚点，
