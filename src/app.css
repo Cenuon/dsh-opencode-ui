@@ -566,6 +566,23 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
   white-space: nowrap;
 }
 
+/* E5f · 单元格内边距：显式写死，不依赖 DSH 那条规则命中。
+ *
+ * DSH 的内边距写在 `._tableScroll_1ypvv_192 th/td{padding:10px 16px}` ——
+ * 它要求元素**带 `_tableScroll_` 这个类**。但这张表用的是 `_tableFill_`，
+ * 于是内边距压根没生效：实测首列文字距表格左边框只剩约 1px（用户反馈
+ * 「第一列太靠近表格边缘」），行高也只有 padding 之外的部分撑着。
+ *
+ * 数值来源（实测对照）：
+ *   参考图行高 73 img px ÷ 2.0 = 36.5px；你的截图 87 ÷ 1.86 ≈ 47px，偏高 10px。
+ *   行高 = line-height 22px + 上下 padding。取 7px → 22 + 14 = 36px，对齐参考图。
+ *   水平取 16px（DSH 原本的意图值），首列因此离开边框 16px。
+ * 特异度 0-1-3 高于 DSH 的 0-1-1，无需 !important。 */
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) :is(th, td) {
+  padding: 7px 16px;
+  vertical-align: middle;
+}
+
 /* E6 · 不做。清单要求把 markdown 体 gap 16→20px，但 AssistantMarkdown 的
    _body 只能靠「祖先 + 类名」双重限定才能避开 _body 的另外 6 个模块
    （r52wTW / ft5itq / UHhYua / rK8Ova …），而它的祖先链里没有稳定语义锚点，
