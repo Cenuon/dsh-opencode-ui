@@ -176,21 +176,37 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
-/* 全屏后内容列居中并限宽到 opencode 的 640px。
+/* 全屏后内容列限宽到 opencode 的 640px，并**左对齐**而不是在剩余空间里居中。
+ *
+ * 居中是错的：窗口越宽，内容越往右漂，和左导航之间裂开一大片空白 —— 用户
+ * 反馈「设置项和设置内容近一点」就是这个。参考图（OpenCode 桌面版，缩放 2.0）
+ * 实测：导航药丸右缘 x=254.5，内容卡片左缘 x=383，间距 128.5。
+ * 本插件导航宽 260、内边距 24，药丸右缘在 236，所以内容列再左移
+ * 236 + 128.5 ≈ 364，即从内容列起点（260）算起 104px。
+ *
  * slot 宿主是 <div data-slot style="display:contents">，不产生盒子，所以真正的
  * flex item 是 slot 内部的 section 元素 —— 两条选择器都写上以兼容两种渲染。 */
 [data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 24px 24px 32px;
+  align-items: flex-start;
+  padding: 24px 24px 32px 104px;
 }
 
 [data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) > *,
 [data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) > [data-slot] > * {
   width: 100%;
   max-width: 640px;
-  margin-inline: auto;
+  margin-inline: 0;
+}
+
+/* 设置面板内的「次级嵌套面」收敛到卡片面。
+ * DSH 给行内控件（下拉、次要按钮）套的是 --dsw-alias-bg-layer-3 的灰底，
+ * 实测填充 #f2f2f2，在卡片上读作一个个灰色方块；参考图里这些控件是**无框的**
+ * 文字 + 箭头。把这一层在面板作用域内改成卡片面，控件就融进卡片了。
+ * 只在设置面板内生效，不影响应用其它地方的嵌套面。 */
+[data-shortcut-modal="settings"] {
+  --dsw-alias-bg-layer-3: var(--dsw-alias-bg-layer-1);
 }
 
 /* ---------------------------------------------------------------------------
