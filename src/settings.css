@@ -204,10 +204,13 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
  * 5. 卡片与行                                            [C-27 ~ C-37]
  * ------------------------------------------------------------------------ */
 
-/* 行容器：opencode 卡片行 padding 20px 0 / gap 24 / 0.5px 分隔。 */
+/* 行容器：行之间的呼吸感全在这里（容器 gap 已归零）。
+ * 实测行内容高 43px（标题 20 + 说明 margin-top 4 + 说明 20），
+ * padding 15px 上下 → 行间距 43 + 30 = 73px，与参考图实测的 72.5px 一致。
+ * 之前写 20px 时是 83px，再叠上容器 gap 32px 就成了 113.5px。 */
 [data-shortcut-modal="settings"] :is([class$="_row"], [class*="_row "]) {
   gap: 24px;
-  padding: 20px 0;
+  padding: 15px 0;
   border-bottom-width: 0.5px;
   border-bottom-style: solid;
   border-bottom-color: var(--dsw-alias-border-l2);
@@ -298,10 +301,18 @@ body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dial
   grid-template-columns: minmax(0, 1fr);
 }
 
-/* 分区容器：去掉各页自带的 720/760px 限宽（由 _options 统一到 640px），
- * 并把区块间距拉到 opencode 的 32px。 */
+/* 分区容器：去掉各页自带的 720/760px 限宽（由 _options 统一到 640px）。
+ *
+ * ★ 这里**不能给 gap**。`YSv5hq_section` 的子元素就是一行行设置项 ——
+ *   实测它的 children 是 `_58QN-a_row` / `yO5RqG_row` / `RrNL-q_group` /
+ *   `e8IdOq_row` … 所以 `gap: 32px` 等于把**行间距**设成 32px：
+ *   行盒子 83px + gap 32px = 行间距 113.5px，而参考图只有 72.5px，
+ *   用户反馈「这里太高了」。
+ *   opencode 的 32px 是**卡片与卡片之间**的距离，不是行之间；
+ *   行之间的呼吸感由行自己的 padding 提供（opencode 就是 padding:20px 0
+ *   + 容器无 gap，靠 divide-y 画线）。 */
 [data-shortcut-modal="settings"] :is([class$="_section"], [class*="_section "]) {
-  gap: 32px;
+  gap: 0;
   max-width: none;
 }
 
