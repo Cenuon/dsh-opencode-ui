@@ -189,6 +189,31 @@ html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]
   color: var(--dsw-alias-label-primary);
 }
 
+/* B17 · 侧栏底部账号行收紧。
+ *
+ * DevTools 父链 dump 实测：
+ *   DIV    hjANda_root        高 52   pad 0px 8px 8px
+ *   SPAN   hjANda_anchor      inline-flex
+ *   BUTTON hjANda_trigger     高 44   pad 6px   gap 8px
+ *   DIV    _77Pn0W_triggerRow        margin 4px -2px
+ * 即 44 = 头像 32 + 上下 padding 6×2，总高 52 = 44 + _root 的 8px 底边距。
+ * 用户反馈「这里也要紧凑」，压缩内边距与外侧 margin：
+ *   trigger    padding 6px   → 2px 6px     → 行高 44 → 36
+ *   triggerRow margin 4/-2   → 0           → 去掉外侧 4px
+ *   _root      底边距 8px    → 4px         → 总高 52 → 40 */
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_trigger"], [class*="_trigger "]) {
+  padding: 2px 6px;
+}
+
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_triggerRow"], [class*="_triggerRow "]) {
+  margin: 0;
+  gap: 6px;
+}
+
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]) {
+  padding-bottom: 4px;
+}
+
 /* B11 · 面板列表：区块间距与行间距。
  *
  * ★ 这里原本写的是 `gap:4px; margin-bottom:32px` —— 比 DSH 原生的
