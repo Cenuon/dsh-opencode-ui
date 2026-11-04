@@ -457,6 +457,40 @@ html body [data-conversation-scroll] :is([class$="_scroll"], [class*="_scroll "]
   padding: 20px calc(var(--dsh-composer-side-clearance) + 20px);
 }
 
+/* E1b · 消息列两侧留白：让拖动可以多拖一点。
+ *
+ * 用户反馈「DSH 有个可以拖动调宽度的组件，但拖到一定程度就拖不动了，
+ * 希望可以继续多拖一点，也不是一点距离都不留，而是少留一点」。
+ *
+ * 限制来源查清了（`dsh-client-ui-conversation/lib/client.js`）：
+ *   const CONTENT_EDGE_BUDGET = 176;   // 两侧合计留 176px
+ *   const CONTENT_MIN = 640;
+ *   function resolveContentWidth(columnWidth, preference) {
+ *     const max = Math.max(CONTENT_MIN, columnWidth - CONTENT_EDGE_BUDGET);
+ *     if (preference !== null) return Math.min(Math.max(preference, CONTENT_MIN), max);
+ *     return Math.max(680, Math.min(columnWidth * .64, 920));
+ *   }
+ * 拖动把偏好写进 localStorage，JS 算出**已夹过上限**的值写进
+ * `--dsh-chat-user-width`，CSS 再 var() 读它。
+ *
+ * ★ 那 176px 是 **JS 常量，纯 CSS 改不了** —— 所以这里绕开它：
+ *   把 JS 夹过的值**加回差值**（176 - 96 = 80px），同时用「列宽 - 96px」
+ *   兜住上限。效果：
+ *     拖到最右时 content = 列宽 - 96（原来只能到 列宽 - 176，多出 80px）
+ *     拖到中间时 content = 偏好 + 80，拖动依然逐级生效
+ *   没设过偏好时 fallback 取 DSH 自己的 (列宽 - 176)，+80 后同样是 列宽 - 96，
+ *   两条路径自洽。
+ *
+ * 想再调就改 --ocui-chat-edge-budget 一个数（两侧合计留白）：
+ *   96 = 每侧 48px（当前）· 64 = 每侧 32px 更满 · 176 = 还原 DSH 原样。 */
+html body [data-conversation-scroll] :is([class$="_column"], [class*="_column "]) {
+  --ocui-chat-edge-budget: 96px;
+  --dsh-chat-content-width: min(
+    calc(var(--dsh-conversation-column-width, 100%) - var(--ocui-chat-edge-budget)),
+    calc(var(--dsh-chat-user-width, calc(var(--dsh-conversation-column-width, 100%) - 176px)) + 80px)
+  );
+}
+
 /* E2 · 用户气泡：去掉淡蓝底与大圆角，改 opencode 一级层 + 0.5px 发丝边框。
    不写 font-size（内容字号是用户偏好）。
    行高用 calc(20px + delta)：保留用户字号增量，只把比例收到 opencode 的 20px。 */
