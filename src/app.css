@@ -122,7 +122,7 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
 /* B1 · 根容器：opencode 外壳是 padding:0 8px 8px。
    注意 regionArea 用 margin-right:calc(-1 * var(--dsh-sidebar-inline-padding))
    抵消内边距，所以改内边距必须同步改变量，否则 regionArea 会溢出 4px。 */
-html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]) {
+html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]) {
   --dsh-sidebar-inline-padding: 8px;
   padding: 0 var(--dsh-sidebar-inline-padding) 8px;
   background: transparent;
@@ -138,7 +138,7 @@ html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]
 
 /* B4 · 品牌行：对齐 opencode 顶栏内层 height:28px; gap:4px。
    排除折叠态（折叠态另有 height:36px 的一套规则，不该被覆盖）。 */
-html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_logoRow"], [class*="_logoRow "]) {
+html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_logoRow"], [class*="_logoRow "]) {
   height: 28px;
   margin-bottom: 8px;
   padding: 0;
@@ -170,7 +170,7 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
    排除折叠态（折叠态是 36×36 图标按钮）。
    背景置 transparent 同时压掉 darwin 的 #ffffff8c / 暗色 #ffffff26 玻璃材质
    （本规则特异性高于 [data-platform=darwin] .kB3qhq_newSession）。 */
-html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) > :is([class$="_newSession"], [class*="_newSession "]) {
+html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) > :is([class$="_newSession"], [class*="_newSession "]) {
   height: 28px;
   border-radius: var(--dsw-radius-md);
   border: 0.5px solid var(--dsw-alias-border-l2);
@@ -184,7 +184,7 @@ html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) > :is([class$="_newSession"], [class*="_newSession "]):hover {
+html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) > :is([class$="_newSession"], [class*="_newSession "]):hover {
   background: var(--dsw-alias-interactive-bg-hover);
   color: var(--dsw-alias-label-primary);
 }
@@ -203,7 +203,7 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
 /* B12 · 面板行：直接对齐 opencode 左导航项实测值
    （height:28px; gap:8px; border-radius:6px; padding:0 6px; 13px/440）。
    排除折叠态（折叠态是 36×36 居中图标）。 */
-html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]) {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]) {
   min-height: 26px;
   border-radius: var(--dsw-radius-md);
   gap: 6px;
@@ -219,11 +219,11 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
 /* B13 + B14 · 悬停与激活态用同一个语义 token（tokens.json 会把它指向
    opencode 的导航 hover / 激活底 rgba(0,0,0,.08)）。
    两条分开写，保留激活态在 hover 之外也成立。 */
-html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]):hover {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]):hover {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
-html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]):is([class$="_panelActive"], [class*="_panelActive "]) {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]):is([class$="_panelActive"], [class*="_panelActive "]) {
   background: var(--dsw-alias-interactive-bg-hover);
   color: var(--dsw-alias-label-primary);
 }
