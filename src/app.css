@@ -502,6 +502,25 @@ html body :is([class$="_body"], [class*="_body "]):has([data-conversation-scroll
   );
 }
 
+/* E1c · 拖动手柄宽度：显式给值，不让它塌成 0。
+ *
+ * DSH 出厂：
+ *   .kiGsTW_widthHandle{ width: min(10px, calc((100% - var(--dsh-chat-content-width)) / 2 - 48px)) }
+ *   .kiGsTW_widthHandle[data-side=left]{ right: calc(50% + var(--dsh-chat-content-width) / 2 + 24px) }
+ * 手柄右边缘在「内容边缘往外 24px」，宽度取 min(10px, 每侧留白 - 48px)。
+ * 那个 48 = 24（离内容边缘）+ 24（离容器边缘）的双侧余量。
+ *
+ * E1b 把两侧合计留白从 176px 收到 96px 后，每侧只剩 48px：
+ *   min(10px, 48 - 48) = min(10px, 0) = **0** → 手柄整个消失
+ * （用户反馈「拖到最宽后拖动手柄就不见了」）。
+ *
+ * 实测手柄的占位是「内容边缘外 24..34px」，只要每侧留白 ≥ 34px 就放得下，
+ * 而 96px 预算给的是 48px，余量充足。所以直接给 10px，不再依赖那个会塌的公式。
+ * 特异度 (0,1,2) 高于 DSH 的 (0,1,0)。 */
+html body [data-width-handle] {
+  width: 10px;
+}
+
 /* E2 · 用户气泡：去掉淡蓝底与大圆角，改 opencode 一级层 + 0.5px 发丝边框。
    不写 font-size（内容字号是用户偏好）。
    行高用 calc(20px + delta)：保留用户字号增量，只把比例收到 opencode 的 20px。 */
