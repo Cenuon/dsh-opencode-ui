@@ -658,13 +658,22 @@ html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markd
  * 字号沿用正文（用户要求「所有文字大小一致」），字重与字距按 console：
  * 表头 530、正文 440、字距 -0.04px。 */
 
-/* 外壳：圆角 6px + 2px 内缩 + 0.5px **内阴影**发丝线（console 用的是 inset shadow，不是 border） */
+/* 外壳：圆角 6px + 2px 内缩 + 1px **内阴影**描边（用 inset shadow 而不是 border，
+ * 这样圆角和 2px 内缩都不受 border 盒模型影响）。
+ *
+ * ★ 这里从 0.5px 改成了 1px。原因（截图实测，2x 屏）：
+ *     上边框 / 左边框 = 1 设备像素（值 232）
+ *     行分隔线        = 2 设备像素（值 231）
+ *   外框是 0.5px CSS、行线是 1px CSS —— **同样颜色，外框只有行线一半粗**，
+ *   细的那条在视觉上就"发虚"（用户反馈「表格边框线有点模糊」）。
+ *   这是照抄 console 规格时留下的不一致：console 外壳是 0.5px、行线是 1px。
+ *   统一到 1px，和行线一致。 */
 html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) {
   border: none;
   border-radius: var(--dsw-radius-md);
   padding: 2px;
   background: var(--dsw-alias-bg-layer-1);
-  box-shadow: inset 0 0 0 0.5px var(--dsw-alias-border-l1);
+  box-shadow: inset 0 0 0 1px var(--dsw-alias-border-l1);
 }
 
 /* 表格本体：console 用 border-separate + spacing 0（collapse 会让圆角失效） */
