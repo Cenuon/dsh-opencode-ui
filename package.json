@@ -18,7 +18,8 @@
     "icon.svg",
     "src",
     "docs",
-    "build.mjs"
+    "build.mjs",
+    "tools"
   ],
   "dsh": {
     "bundle": {

@@ -12,7 +12,7 @@
    1. 每条选择器都有祖先限定。303 个类名后缀里 32 个跨模块复用
       （_root 命中 17 个模块、_title/_chevron 各 8、_body 7、_row 4、
       _header 4、_iconButton 4、_trigger 3、_panel 3、_summary 3…），
-      裸写 [class$="_root"] 会改坏整个应用。
+      裸写 :is([class$="_root"], [class*="_root "]) 会改坏整个应用。
    2. 优先用与 hash 无关的语义锚点：#root、[data-phase]、
       [data-conversation-scroll]、[data-composer-dock]、[data-composer-stat]、
       [data-tool]、[data-sidebar-collapsed] 等。
@@ -56,33 +56,33 @@ html body {
 /* A4 · 最外层 app 底：opencode 的 bg-deep（浅 #fafafa / 深 #080808）。
    用 :has(> sidebarCol) 把外壳 frame 与聊天 frame(tnXGgG_frame) 区分开——
    _frame 有 2 个模块，裸用会同时命中。 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) {
   background: var(--dsw-alias-bg-layer-1);
 }
 
 /* A5 · macOS 下外壳 frame 原本是 background:0 0（透明，让原生材质透出）。
    opencode 是纯色平面，必须显式给色，否则底色直接透出去。
    比原规则 [data-platform=darwin] .PIRFFq_frame (0,2,0) 高，稳赢。 */
-html[data-platform="darwin"] body [class$="_frame"]:has(> [class$="_sidebarCol"]) {
+html[data-platform="darwin"] body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) {
   background: var(--dsw-alias-bg-layer-1);
 }
 
 /* A6 · 侧栏列：底色走 sidebar 语义 token，分隔线改 0.5px 发丝。
    同时把 centerCol 的 border-left 收掉，避免 darwin 下与这里叠成 1px 双线。 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) {
   background: var(--dsw-specific-sidebar-fill);
   background-image: none;
   border-right: 0.5px solid var(--dsw-alias-border-l2);
 }
 
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_centerCol"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_centerCol"], [class*="_centerCol "]) {
   background: var(--dsw-alias-bg-base);
   border-left: none;
 }
 
 /* 侧栏折叠时列宽为 0（darwin），0.5px 的 border-right 会在最左缘留一条竖线，
    必须收掉。 */
-html body [class$="_frame"][data-sidebar-collapsed] > [class$="_sidebarCol"] {
+html body :is([class$="_frame"], [class*="_frame "])[data-sidebar-collapsed] > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) {
   border-right: none;
 }
 
@@ -91,20 +91,20 @@ html body [class$="_frame"][data-sidebar-collapsed] > [class$="_sidebarCol"] {
    不覆盖的话后续所有改造在两侧都会失真。
    本规则 (0,4,2)/(0,5,2) 高于原规则 (0,2,0)/(0,3,0)，
    也高于 @media (prefers-reduced-transparency:reduce) 里的回退。 */
-html[data-platform="darwin"] body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"],
-html[data-platform="darwin"] body[data-ds-dark-theme] [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] {
+html[data-platform="darwin"] body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]),
+html[data-platform="darwin"] body[data-ds-dark-theme] :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) {
   background: var(--dsw-specific-sidebar-fill);
   background-image: none;
   border-right: 0.5px solid var(--dsw-alias-border-l2);
 }
 
 /* A9 · 右栏基准面 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCol"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_rightbarCol"], [class*="_rightbarCol "]) {
   background: var(--dsw-alias-bg-base);
 }
 
 /* A11 · 外壳底行与 app 底同色 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_bottomRow"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_bottomRow"], [class*="_bottomRow "]) {
   background: var(--dsw-alias-bg-layer-1);
 }
 
@@ -122,7 +122,7 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_bottomRow"
 /* B1 · 根容器：opencode 外壳是 padding:0 8px 8px。
    注意 regionArea 用 margin-right:calc(-1 * var(--dsh-sidebar-inline-padding))
    抵消内边距，所以改内边距必须同步改变量，否则 regionArea 会溢出 4px。 */
-html:not([data-windows-titlebar]) body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] > [class$="_root"] {
+html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]) {
   --dsh-sidebar-inline-padding: 8px;
   padding: 0 var(--dsh-sidebar-inline-padding) 8px;
   background: transparent;
@@ -131,14 +131,14 @@ html:not([data-windows-titlebar]) body [class$="_frame"]:has(> [class$="_sidebar
 /* B3 · topStrip 原本用 margin:-6px … 抵消 root 的 6px 上内边距；
    上面把上内边距改成 0 后，这个负 margin 会把工具条顶进窗口红绿灯区域，
    必须归零。高度 52px 保持不动——它是给 macOS 交通灯预留的净空。 */
-html:not([data-windows-titlebar]) body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] [class$="_topStrip"] {
+html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_topStrip"], [class*="_topStrip "]) {
   margin: 0 calc(-1 * var(--dsh-sidebar-inline-padding)) 0;
   padding: 0 0 2px;
 }
 
 /* B4 · 品牌行：对齐 opencode 顶栏内层 height:28px; gap:4px。
    排除折叠态（折叠态另有 height:36px 的一套规则，不该被覆盖）。 */
-html:not([data-windows-titlebar]) body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] > [class$="_root"]:not([class$="_collapsed"]) [class$="_logoRow"] {
+html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_logoRow"], [class*="_logoRow "]) {
   height: 28px;
   margin-bottom: 8px;
   padding: 0;
@@ -149,7 +149,7 @@ html:not([data-windows-titlebar]) body [class$="_frame"]:has(> [class$="_sidebar
 
 /* B5 · 品牌名：opencode 无大字品牌名，收进 13px 字阶。
    这是组件 chrome（原本硬编码 18px），不是用户偏好驱动的字号。 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] [class$="_brandName"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_brandName"], [class*="_brandName "]) {
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 500;
   line-height: 20px;
@@ -157,7 +157,7 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol
 }
 
 /* B6 · 构建版本徽标：opencode 没有纯黑白反色徽标，改成弱底色小标签。 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] [class$="_buildVersion"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_buildVersion"], [class*="_buildVersion "]) {
   background: var(--dsw-alias-interactive-bg-hover);
   color: var(--dsw-alias-label-secondary);
   font-size: 10px;
@@ -170,7 +170,7 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol
    排除折叠态（折叠态是 36×36 图标按钮）。
    背景置 transparent 同时压掉 darwin 的 #ffffff8c / 暗色 #ffffff26 玻璃材质
    （本规则特异性高于 [data-platform=darwin] .kB3qhq_newSession）。 */
-html:not([data-windows-titlebar]) body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] > [class$="_root"]:not([class$="_collapsed"]) > [class$="_newSession"] {
+html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) > :is([class$="_newSession"], [class*="_newSession "]) {
   height: 28px;
   border-radius: var(--dsw-radius-md);
   border: 0.5px solid var(--dsw-alias-border-l2);
@@ -184,13 +184,13 @@ html:not([data-windows-titlebar]) body [class$="_frame"]:has(> [class$="_sidebar
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-html:not([data-windows-titlebar]) body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] > [class$="_root"]:not([class$="_collapsed"]) > [class$="_newSession"]:hover {
+html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) > :is([class$="_newSession"], [class*="_newSession "]):hover {
   background: var(--dsw-alias-interactive-bg-hover);
   color: var(--dsw-alias-label-primary);
 }
 
 /* B11 · 面板列表：opencode 列表 gap:4px、区块间距 32px */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] [class$="_panelList"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_panelList"], [class*="_panelList "]) {
   gap: 4px;
   margin-bottom: 32px;
 }
@@ -198,7 +198,7 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol
 /* B12 · 面板行：直接对齐 opencode 左导航项实测值
    （height:28px; gap:8px; border-radius:6px; padding:0 6px; 13px/440）。
    排除折叠态（折叠态是 36×36 居中图标）。 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] > [class$="_root"]:not([class$="_collapsed"]) [class$="_panelRow"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]) {
   min-height: 28px;
   border-radius: var(--dsw-radius-md);
   gap: 8px;
@@ -214,23 +214,23 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol
 /* B13 + B14 · 悬停与激活态用同一个语义 token（tokens.json 会把它指向
    opencode 的导航 hover / 激活底 rgba(0,0,0,.08)）。
    两条分开写，保留激活态在 hover 之外也成立。 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] > [class$="_root"]:not([class$="_collapsed"]) [class$="_panelRow"]:hover {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]):hover {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] > [class$="_root"]:not([class$="_collapsed"]) [class$="_panelRow"][class$="_panelActive"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) > :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]):is([class$="_panelActive"], [class*="_panelActive "]) {
   background: var(--dsw-alias-interactive-bg-hover);
   color: var(--dsw-alias-label-primary);
 }
 
 /* B15 + B16 · 图标按钮（_iconButton 有 4 个模块，必须限定在 sidebarCol 内）。
    圆角交给 var(--dsw-radius-md)（token 层收敛到 6px）。 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] [class$="_iconButton"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_iconButton"], [class*="_iconButton "]) {
   border-radius: var(--dsw-radius-md);
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] [class$="_iconButton"]:hover {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_iconButton"], [class*="_iconButton "]):hover {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
@@ -238,7 +238,7 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol
    它的 -padding 抵消由 B1 同步改变量解决。此处不写规则。 */
 
 /* B18 · 底部区域上沿加 0.5px 发丝分隔（opencode 账号区上方有分隔线） */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] [class$="_footArea"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_footArea"], [class*="_footArea "]) {
   border-top: 0.5px solid var(--dsw-alias-border-l2);
 }
 
@@ -248,12 +248,12 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol
 /* ==========================================================================
    C. 会话列表行（ui-workspace 的 JoiKIa_*，清单 §C，10 条）
    ★ 注意：这批类名不在 ui-sidebar 包里，前缀是 JoiKIa。
-   锚点用 [class$="_regionArea"]（sidebar.workspaces 槽位宿主，后缀唯一）。
+   锚点用 :is([class$="_regionArea"], [class*="_regionArea "])（sidebar.workspaces 槽位宿主，后缀唯一）。
    ========================================================================== */
 
 /* C1 · 行容器对齐 opencode 导航项 */
-html body [class$="_frame"] [class$="_regionArea"] [class$="_projectRow"],
-html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_projectRow"], [class*="_projectRow "]),
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_sessionRow"], [class*="_sessionRow "]) {
   border-radius: var(--dsw-radius-md);
   padding: 0 6px;
   gap: 8px;
@@ -266,21 +266,21 @@ html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"] {
    → 判定为「硬套会难看」，保留原高度。 */
 
 /* C3 · sessionRow 是单行结构，可以安全收到 28px */
-html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_sessionRow"], [class*="_sessionRow "]) {
   height: 28px;
 }
 
 /* C4 · 悬停与选中态：opencode 激活项底比 DSH 默认更实 */
-html body [class$="_frame"] [class$="_regionArea"] [class$="_projectRow"]:hover,
-html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"]:hover,
-html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"][class$="_selected"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_projectRow"], [class*="_projectRow "]):hover,
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_sessionRow"], [class*="_sessionRow "]):hover,
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_sessionRow"], [class*="_sessionRow "]):is([class$="_selected"], [class*="_selected "]) {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
 /* C5 · 行标题：opencode 行内正文 13px/20px/440。
    _title 有 8 个模块，必须限定在 projectRow / sessionRow 内。 */
-html body [class$="_frame"] [class$="_regionArea"] [class$="_projectRow"] [class$="_title"],
-html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"] [class$="_title"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_projectRow"], [class*="_projectRow "]) :is([class$="_title"], [class*="_title "]),
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_sessionRow"], [class*="_sessionRow "]) :is([class$="_title"], [class*="_title "]) {
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
   font-weight: 400;
@@ -289,32 +289,32 @@ html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"] [class
 
 /* C6 · 元信息：只换灰阶，字号保持 12px（偏离清单的 13px）。
    原因：projectRow 是两行结构，meta 升到 13px 会与标题抢层级并加剧行高拥挤。 */
-html body [class$="_frame"] [class$="_regionArea"] [class$="_meta"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_meta"], [class*="_meta "]) {
   color: var(--dsw-alias-label-secondary);
   line-height: 20px;
 }
 
 /* C7 · 时间戳：10px 低于 opencode 最小字号，提到 12px */
-html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"] [class$="_time"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_sessionRow"], [class*="_sessionRow "]) :is([class$="_time"], [class*="_time "]) {
   font-size: calc(12px + var(--dsh-content-font-delta, 0px));
   line-height: 16px;
   color: var(--dsw-alias-label-secondary);
 }
 
 /* C8 · 行操作图标间距收到 8px（保留原有的 hover 才显示行为） */
-html body [class$="_frame"] [class$="_regionArea"] [class$="_rowActions"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_rowActions"], [class*="_rowActions "]) {
   gap: 8px;
 }
 
 /* C9 · 行内图标按钮触达区 16→20px */
-html body [class$="_frame"] [class$="_regionArea"] [class$="_iconButton"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_iconButton"], [class*="_iconButton "]) {
   width: 20px;
   height: 20px;
   border-radius: var(--dsw-radius-sm);
 }
 
 /* C10 · 展开中的工作区文件夹：opencode 层级靠字重与灰度，不靠颜色 */
-html body [class$="_frame"] [class$="_regionArea"] [class$="_folderActive"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_regionArea"], [class*="_regionArea "]) :is([class$="_folderActive"], [class*="_folderActive "]) {
   color: var(--dsw-alias-label-primary);
   font-weight: 500;
 }
@@ -328,7 +328,7 @@ html body [class$="_frame"] [class$="_regionArea"] [class$="_folderActive"] {
    ========================================================================== */
 
 /* D1 · 会话顶栏：去掉 76px 固定高度，改 opencode 顶栏 padding:8px + 0.5px 发丝底边 */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) {
   min-height: 0;
   padding: 8px 20px;
   border-bottom: 0.5px solid var(--dsw-alias-border-l2);
@@ -336,13 +336,13 @@ html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phas
 
 /* D2 · 标题行：保留 padding-inline-start（macOS 折叠侧栏时避让窗口红绿灯），
    只收高度。删掉它会压住窗口按钮。 */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_titleRow"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_titleRow"], [class*="_titleRow "]) {
   min-height: 28px;
 }
 
 /* D3 · 面包屑：opencode 导航项规格。
    _crumb 有 2 个模块（另一个是斜杠菜单 z8WDjq_crumb），必须限定在会话顶栏内。 */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_crumb"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_crumb"], [class*="_crumb "]) {
   border-radius: var(--dsw-radius-md);
   padding: 0 8px;
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
@@ -352,27 +352,27 @@ html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phas
 }
 
 /* D4 · 当前面包屑：opencode 激活字重 530 → 500 近似 */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_crumbCurrent"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_crumbCurrent"], [class*="_crumbCurrent "]) {
   color: var(--dsw-alias-label-primary);
   font-weight: 500;
 }
 
 /* D5 · 面包屑分隔符 */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_crumbSep"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_crumbSep"], [class*="_crumbSep "]) {
   color: var(--dsw-alias-label-tertiary);
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
 }
 
 /* D6 · 顶栏动作区与工具区：opencode 顶栏内层 gap:4px */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_headerActions"],
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_headerUtilities"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_headerActions"], [class*="_headerActions "]),
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_headerUtilities"], [class*="_headerUtilities "]) {
   gap: 4px;
 }
 
 /* D7 · tab 条：opencode 实测 height:48px; gap:2px; padding:0 5px; align-items:center。
    原样式是 flex-wrap 的多行网格区，这里收成单行条。 */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_tabs"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_tabs"], [class*="_tabs "]) {
   gap: 2px;
   margin-top: 0;
   padding: 0 5px;
@@ -381,14 +381,14 @@ html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phas
 }
 
 /* D8 · tab 组 */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_viewTabs"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_viewTabs"], [class*="_viewTabs "]) {
   gap: 2px;
   min-height: 28px;
   align-items: center;
 }
 
 /* D9 · 单个 tab：opencode 未激活 = gray、weight 440 → 400，line-height 16.25px */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_tab"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_tab"], [class*="_tab "]) {
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 400;
   line-height: 16.25px;
@@ -401,14 +401,14 @@ html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phas
 /* D10 · tab 下划线几何：opencode 是 1px、无圆角、贴底。
    ★ 这里只改几何，**不设 background**：原规则是 background:0 0（透明），
    只有激活 tab 才有线（D12）。若在此处设色，会给所有 tab 都画上下划线。 */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_tab"]:after {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_tab"], [class*="_tab "]):after {
   height: 1px;
   border-radius: 0;
   bottom: 0;
 }
 
 /* D11 · 激活 tab：opencode 是**反色文字**，不是强调蓝 */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_tabActive"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_tabActive"], [class*="_tabActive "]) {
   color: var(--dsw-alias-label-primary);
   font-weight: 500;
 }
@@ -424,12 +424,12 @@ html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phas
    那会让上述两处在浅色下多出近黑实边、深色下变成亮白线，已撤回。
    现在改用 --dsw-alias-label-primary（浅 #161616 / 深 #fafafa，
    opencode 目标为 #242424 / #fafafa），语义略偏但视觉正确。 */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_tabActive"]:after {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_tabActive"], [class*="_tabActive "]):after {
   background: var(--dsw-alias-label-primary);
 }
 
 /* D13 · 未激活 tab 颜色过渡 85ms */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_tab"]:hover {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_tab"], [class*="_tab "]):hover {
   color: var(--dsw-alias-label-primary);
 }
 
@@ -441,7 +441,7 @@ html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phas
    → 判定为不做，作为已知差距接受。 */
 
 /* D15 · tab 标签不截断（opencode 的 Activity/Go/Models… 是完整单词） */
-html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_tabLabel"] {
+html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"], [class*="_centerCol "]) > :is([class$="_root"], [class*="_root "])[data-phase] > :is([class$="_header"], [class*="_header "]) :is([class$="_tabLabel"], [class*="_tabLabel "]) {
   max-width: none;
 }
 
@@ -453,14 +453,14 @@ html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phas
 
 /* E1 · 消息区行内边距：opencode 卡片内边距 20px。
    _scroll 有 2 个模块（tnXGgG 聊天 / JZLxKW composer），必须限定。 */
-html body [data-conversation-scroll] [class$="_scroll"] {
+html body [data-conversation-scroll] :is([class$="_scroll"], [class*="_scroll "]) {
   padding: 20px calc(var(--dsh-composer-side-clearance) + 20px);
 }
 
 /* E2 · 用户气泡：去掉淡蓝底与大圆角，改 opencode 一级层 + 0.5px 发丝边框。
    不写 font-size（内容字号是用户偏好）。
    行高用 calc(20px + delta)：保留用户字号增量，只把比例收到 opencode 的 20px。 */
-html body [class$="_frame"] [class$="_bubble"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_bubble"], [class*="_bubble "]) {
   background: var(--dsw-alias-bg-layer-1);
   border: 0.5px solid var(--dsw-alias-border-l2);
   border-radius: var(--dsw-radius-md);
@@ -473,13 +473,13 @@ html body [class$="_frame"] [class$="_bubble"] {
    保持不动（硬改会破坏右对齐块状感）。 */
 
 /* E4 · 用户消息行间距 */
-html body [class$="_frame"] [class$="_userRow"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_userRow"], [class*="_userRow "]) {
   gap: 8px;
 }
 
 /* E5 · Markdown 正文：只施加字距与行高比例，不动字号。
    这套类名是 web-frontend 的 _名字_hash 约定 → 用 [class^=]。 */
-html body [data-conversation-scroll] [class^="_markdown_"] {
+html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) {
   letter-spacing: -0.04px;
   line-height: calc(20px + var(--dsh-content-font-delta, 0px));
 }
@@ -487,12 +487,12 @@ html body [data-conversation-scroll] [class^="_markdown_"] {
 /* E6 · 不做。清单要求把 markdown 体 gap 16→20px，但 AssistantMarkdown 的
    _body 只能靠「祖先 + 类名」双重限定才能避开 _body 的另外 6 个模块
    （r52wTW / ft5itq / UHhYua / rK8Ova …），而它的祖先链里没有稳定语义锚点，
-   用 [class$="_flowItem"] > [class$="_root"] > [class$="_body"] 这种三段结构
+   用 :is([class$="_flowItem"], [class*="_flowItem "]) > :is([class$="_root"], [class*="_root "]) > :is([class$="_body"], [class*="_body "]) 这种三段结构
    选择器在 DSH 升级后极易失配，收益（4px 间距）与风险不成比例。
    → 判定为不做。 */
 
 /* E7 · 附件卡片 */
-html body [class$="_frame"] [class$="_attachmentRow"] [class$="_fileCard"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_attachmentRow"], [class*="_attachmentRow "]) :is([class$="_fileCard"], [class*="_fileCard "]) {
   border: 0.5px solid var(--dsw-alias-border-l2);
   border-radius: var(--dsw-radius-md);
   min-height: 56px;
@@ -500,48 +500,48 @@ html body [class$="_frame"] [class$="_attachmentRow"] [class$="_fileCard"] {
 }
 
 /* E8 · 附件文件名 */
-html body [class$="_frame"] [class$="_attachmentRow"] [class$="_fileName"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_attachmentRow"], [class*="_attachmentRow "]) :is([class$="_fileName"], [class*="_fileName "]) {
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 500;
   line-height: 20px;
 }
 
 /* E9 · 压缩行按钮与重试摘要：圆角收敛（颜色交给 token 层） */
-html body [class$="_frame"] [class$="_compactionButton"],
-html body [class$="_frame"] [class$="_retrySummary"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_compactionButton"], [class*="_compactionButton "]),
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_retrySummary"], [class*="_retrySummary "]) {
   border-radius: var(--dsw-radius-md);
 }
 
 /* E10 · 工具调用 IO 卡片。
    锚点 [data-tool] 来自 ui-tool 的 UHhYua_root[data-tool^=cordis_]，
    用它避开 _root/_body 的多模块碰撞。 */
-html body [data-conversation-scroll] [data-tool] [class$="_ioCard"] {
+html body [data-conversation-scroll] [data-tool] :is([class$="_ioCard"], [class*="_ioCard "]) {
   border: 0.5px solid var(--dsw-alias-border-l2);
   border-radius: var(--dsw-radius-md);
   margin: 8px 0 8px 4px;
 }
 
 /* E11 · IO 区块：opencode 卡片 gap:24px / padding:20px，按比例收敛 */
-html body [data-conversation-scroll] [data-tool] [class$="_ioSection"] {
+html body [data-conversation-scroll] [data-tool] :is([class$="_ioSection"], [class*="_ioSection "]) {
   column-gap: 24px;
   padding: 16px;
   max-height: 180px;
 }
 
 /* E12 · IO 标签 */
-html body [data-conversation-scroll] [data-tool] [class$="_ioLabel"] {
+html body [data-conversation-scroll] [data-tool] :is([class$="_ioLabel"], [class*="_ioLabel "]) {
   color: var(--dsw-alias-label-secondary);
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
 }
 
 /* E13 · 工具输出滚动区高度 */
-html body [data-conversation-scroll] [data-tool] [class$="_bodyScroll"] {
+html body [data-conversation-scroll] [data-tool] :is([class$="_bodyScroll"], [class*="_bodyScroll "]) {
   max-height: 280px;
 }
 
 /* E14 · 检视按钮：去胶囊，改 6px 圆角 */
-html body [data-conversation-scroll] [data-tool] [class$="_inspectButton"] {
+html body [data-conversation-scroll] [data-tool] :is([class$="_inspectButton"], [class*="_inspectButton "]) {
   border: 0.5px solid var(--dsw-alias-border-l2);
   border-radius: var(--dsw-radius-md);
   font-size: calc(12px + var(--dsh-content-font-delta, 0px));
@@ -549,24 +549,24 @@ html body [data-conversation-scroll] [data-tool] [class$="_inspectButton"] {
 }
 
 /* E15 · 子调用缩进线 */
-html body [data-conversation-scroll] [class$="_subCalls"] {
+html body [data-conversation-scroll] :is([class$="_subCalls"], [class*="_subCalls "]) {
   border-left: 0.5px solid var(--dsw-alias-border-l2);
   padding-left: 12px;
   gap: 6px;
 }
 
 /* E16 · 工具行标题字重：opencode 正文 440 → 400 */
-html body [data-conversation-scroll] [data-tool] [class$="_title"] {
+html body [data-conversation-scroll] [data-tool] :is([class$="_title"], [class*="_title "]) {
   font-weight: 400;
 }
 
 /* E17 · 工具行摘要行高收敛（_summary 有 3 个模块，[data-tool] 限定后唯一） */
-html body [data-conversation-scroll] [data-tool] [class$="_summary"] {
+html body [data-conversation-scroll] [data-tool] :is([class$="_summary"], [class*="_summary "]) {
   line-height: 20px;
 }
 
 /* E18 · 回到底部按钮：去阴影、去胶囊、加发丝边框 */
-html body [class$="_frame"] [class$="_toBottom"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_toBottom"], [class*="_toBottom "]) {
   width: 32px;
   height: 32px;
   border-radius: var(--dsw-radius-md);
@@ -576,13 +576,13 @@ html body [class$="_frame"] [class$="_toBottom"] {
 }
 
 /* E19 · 运行中分隔线：统一到发丝边框色（去掉 color-mix 混色） */
-html body [class$="_frame"] [class$="_runningDivider"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_runningDivider"], [class*="_runningDivider "]) {
   height: 0.5px;
   background: var(--dsw-alias-border-l2);
 }
 
 /* E20 · 「已停止」标记 */
-html body [class$="_frame"] [class$="_stopped"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_stopped"], [class*="_stopped "]) {
   border-radius: var(--dsw-radius-md);
   background: var(--dsw-alias-interactive-bg-hover);
   font-size: calc(12px + var(--dsh-content-font-delta, 0px));
@@ -592,14 +592,14 @@ html body [class$="_frame"] [class$="_stopped"] {
 
 /* ==========================================================================
    F. composer（清单 §F，25 条）★ 重点
-   锚点：[class$="_composerSeat"]（kiGsTW_composerSeat，后缀唯一）
+   锚点：:is([class$="_composerSeat"], [class*="_composerSeat "])（kiGsTW_composerSeat，后缀唯一）
         + [data-composer-dock] / [data-composer-stat]（与 hash 无关）
    ========================================================================== */
 
 /* F1 · 输入卡片：opencode 核心 —— 6px 圆角 + 0.5px 发丝边框 + 零阴影。
    圆角按要求走 var(--dsw-radius-panel)（token 层已收敛到 6px）。
    不写 font-size（输入内容字号是用户偏好）。 */
-html body [class$="_composerSeat"] [class$="_card"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_card"], [class*="_card "]) {
   border-radius: var(--dsw-radius-panel);
   box-shadow: none;
   border: 0.5px solid var(--dsw-alias-border-l2);
@@ -616,7 +616,7 @@ html body [class$="_composerSeat"] [class$="_card"] {
 
 /* F4 · 输入域：只调尺寸与内边距，不写 font-size（用户偏好）。
    行高用 calc 保留用户字号增量。 */
-html body [class$="_composerSeat"] [class$="_input"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_input"], [class*="_input "]) {
   min-height: 32px;
   padding: 8px 10px 0 12px;
   line-height: calc(20px + var(--dsh-content-font-delta, 0px));
@@ -624,35 +624,35 @@ html body [class$="_composerSeat"] [class$="_input"] {
 }
 
 /* F5 · hero（新会话首屏）输入域按比例收敛 */
-html body [class$="_composerSeat"] [class$="_hero"] [class$="_input"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_hero"], [class*="_hero "]) :is([class$="_input"], [class*="_input "]) {
   min-height: 48px;
 }
 
 /* F6 · 占位符跟随 F4 的内边距 */
-html body [class$="_composerSeat"] [class$="_placeholder"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_placeholder"], [class*="_placeholder "]) {
   inset: 8px 10px auto 12px;
   color: var(--dsw-alias-label-tertiary);
 }
 
 /* F7 · 底部按钮行：opencode 8px 节奏 */
-html body [class$="_composerSeat"] [class$="_row"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_row"], [class*="_row "]) {
   gap: 8px;
   padding: 4px 8px 8px;
 }
 
 /* F8 · 工具区与模式区 */
-html body [class$="_composerSeat"] [class$="_tools"],
-html body [class$="_composerSeat"] [class$="_modes"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_tools"], [class*="_tools "]),
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_modes"], [class*="_modes "]) {
   gap: 8px;
 }
 
 /* F9 · 尾部区（_trailing 有 2 个模块，composerSeat 限定后唯一） */
-html body [class$="_composerSeat"] [class$="_trailing"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_trailing"], [class*="_trailing "]) {
   gap: 8px;
 }
 
 /* F10 · 附件按钮：opencode 无圆形按钮，去胶囊改 6px 圆角 + 发丝边框 */
-html body [class$="_composerSeat"] [class$="_add"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_add"], [class*="_add "]) {
   width: 28px;
   height: 28px;
   border-radius: var(--dsw-radius-md);
@@ -662,12 +662,12 @@ html body [class$="_composerSeat"] [class$="_add"] {
 }
 
 /* F11 · 附件按钮悬停 */
-html body [class$="_composerSeat"] [class$="_add"]:hover:not(:disabled) {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_add"], [class*="_add "]):hover:not(:disabled) {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
 /* F12 · 下拉选择器：统一圆角与字重（颜色交给 token 层） */
-html body [class$="_composerSeat"] [class$="_select"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_select"], [class*="_select "]) {
   height: 28px;
   border-radius: var(--dsw-radius-md);
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
@@ -680,7 +680,7 @@ html body [class$="_composerSeat"] [class$="_select"] {
    蓝 #4276E6）+ color:#fff + border-radius:999px + translateY(-2px)。
    ★ color 必须一起覆盖：出厂把图标色写死成 #fff，而反色底在深色下是近白
    #fafafa，只改 background 会得到白底白箭头。 */
-html body [class$="_composerSeat"] [class$="_primary"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_primary"], [class*="_primary "]) {
   width: 30px;
   height: 30px;
   border-radius: var(--dsw-radius-md);
@@ -692,7 +692,7 @@ html body [class$="_composerSeat"] [class$="_primary"] {
 
 /* F14 · 主按钮悬停：反色底在两级灰之间过渡（出厂走 button-info-hover，
    那是品牌蓝系，与反色底不搭）。 */
-html body [class$="_composerSeat"] [class$="_primary"]:hover:not(:disabled) {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_primary"], [class*="_primary "]):hover:not(:disabled) {
   background: var(--dsw-alias-label-secondary);
   color: var(--dsw-alias-bg-base);
 }
@@ -705,7 +705,7 @@ html body [class$="_composerSeat"] [class$="_primary"]:hover:not(:disabled) {
    拉散到整行两端，观感很糟（用户截图确认）。改回紧排一组、与卡片左缘对齐，
    并去掉那条上分隔线 —— 状态行是卡片的附属信息，不该长出一条横贯整屏的线。
    保留 dock 的可见性与位置——git 分支状态项照常可用。 */
-html body [class$="_composerSeat"] [data-composer-dock] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] {
   width: 100%;
   max-width: var(--dsh-composer-card-max-width);
   justify-content: flex-start;
@@ -715,7 +715,7 @@ html body [class$="_composerSeat"] [data-composer-dock] {
 }
 
 /* F17 · 状态行内的直接子项统一到 13px/20px 灰阶（chrome 字号，非用户偏好） */
-html body [class$="_composerSeat"] [data-composer-dock] > * {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] > * {
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
   color: var(--dsw-alias-label-secondary);
@@ -724,7 +724,7 @@ html body [class$="_composerSeat"] [data-composer-dock] > * {
 /* F18 · 状态项容器。用 [data-composer-stat] 语义锚点而不是旧插件的 .dshgb-pill：
    后者属于将被移除的 @local/git-branch，且新插件的类名尚未定。
    这条同时覆盖 DSH 自带的 StatsPills 与新插件的 git 分支项。 */
-html body [class$="_composerSeat"] [data-composer-dock] [data-composer-stat] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] [data-composer-stat] {
   border-radius: var(--dsw-radius-md);
   gap: 6px;
   padding: 0;
@@ -734,7 +734,7 @@ html body [class$="_composerSeat"] [data-composer-dock] [data-composer-stat] {
 }
 
 /* F19 · 状态项图标：opencode 导航图标 16px */
-html body [class$="_composerSeat"] [data-composer-dock] [data-composer-stat] svg {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] [data-composer-stat] svg {
   width: 16px;
   height: 16px;
   flex: none;
@@ -742,14 +742,14 @@ html body [class$="_composerSeat"] [data-composer-dock] [data-composer-stat] svg
 
 /* F20 · 状态项悬停：其内部 pill 是按钮或 span，形状由各自模块决定，
    这里只统一过渡曲线；背景色由各 pill 自身规则负责。 */
-html body [class$="_composerSeat"] [data-composer-dock] [data-composer-stat] > * {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] [data-composer-stat] > * {
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
 /* F21 · dock 内的 ContextMeter / TurnUsagePanel 触发按钮。
    _trigger 有 3 个模块（ContextMeter / TurnUsagePanel / ModelSelect），
    用 [data-composer-dock] 限定后只剩 dock 内的那个。 */
-html body [class$="_composerSeat"] [data-composer-dock] [class$="_trigger"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] :is([class$="_trigger"], [class*="_trigger "]) {
   border-radius: var(--dsw-radius-md);
   gap: 6px;
   padding: 0;
@@ -759,21 +759,21 @@ html body [class$="_composerSeat"] [data-composer-dock] [class$="_trigger"] {
 }
 
 /* F22 · 触发按钮悬停 / 展开态 */
-html body [class$="_composerSeat"] [data-composer-dock] [class$="_trigger"]:hover,
-html body [class$="_composerSeat"] [data-composer-dock] [class$="_trigger"][aria-expanded="true"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] :is([class$="_trigger"], [class*="_trigger "]):hover,
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] :is([class$="_trigger"], [class*="_trigger "])[aria-expanded="true"] {
   background: var(--dsw-alias-interactive-bg-hover);
   color: var(--dsw-alias-label-primary);
 }
 
 /* F23 · 上下文占用进度条：opencode 无胶囊、发丝化 */
-html body [class$="_composerSeat"] [data-composer-dock] [class$="_bar"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-dock] :is([class$="_bar"], [class*="_bar "]) {
   height: 2px;
   border-radius: 0;
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
 /* F24 · 提示条 */
-html body [class$="_composerSeat"] [class$="_notice"] {
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_notice"], [class*="_notice "]) {
   border-radius: var(--dsw-radius-md);
   background: var(--dsw-alias-bg-layer-1);
   border: 0.5px solid var(--dsw-alias-border-l2);
@@ -795,13 +795,13 @@ html body [class$="_composerSeat"] [class$="_notice"] {
    opencode 没有 dock 面板这一层概念，保持不动。 */
 
 /* G3 · 右栏图标按钮圆角收敛 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCol"] [class$="_iconButton"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_rightbarCol"], [class*="_rightbarCol "]) :is([class$="_iconButton"], [class*="_iconButton "]) {
   border-radius: var(--dsw-radius-md);
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
 /* G4 · 不可用提示：opencode 卡片内边距 20px */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCol"] [class$="_unavailable"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_rightbarCol"], [class*="_rightbarCol "]) :is([class$="_unavailable"], [class*="_unavailable "]) {
   color: var(--dsw-alias-label-secondary);
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
@@ -809,24 +809,24 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCo
 }
 
 /* G5 · 空态引导 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCol"] [class$="_guide"],
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCol"] [class$="_entryCell"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_rightbarCol"], [class*="_rightbarCol "]) :is([class$="_guide"], [class*="_guide "]),
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_rightbarCol"], [class*="_rightbarCol "]) :is([class$="_entryCell"], [class*="_entryCell "]) {
   border-radius: var(--dsw-radius-md);
 }
 
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCol"] [class$="_entry"]:hover {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_rightbarCol"], [class*="_rightbarCol "]) :is([class$="_entry"], [class*="_entry "]):hover {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
 /* G6 · DockKit 面板 tab。这批是 web-frontend 的 _名字_hash 约定。
    _tab_ 是首位类名 → [class^=]；_tabActive_ 与 _tab_ 同处一个 class 属性
    且不在首位，^= 无法命中，只能用 [class*=]（本文件唯一必要的例外）。 */
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCol"] [class^="_tab_"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_rightbarCol"], [class*="_rightbarCol "]) :is([class^="_tab_"], [class*=" _tab_"]) {
   border-radius: var(--dsw-radius-md);
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCol"] [class*="_tabActive_"] {
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_rightbarCol"], [class*="_rightbarCol "]) [class*="_tabActive_"] {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
@@ -849,37 +849,37 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCo
    保留 [data-shell-overlay] 内所有浮层、下拉菜单、模态框的 elevation。
 
    TodoPanel 的根是 rK8Ova_root，而 _root 命中 17 个模块，不能裸写。
-   用 :has([class$="_progress"]) 定位它——_progress 在全部 382 个类名里
+   用 :has(:is([class$="_progress"], [class*="_progress "])) 定位它——_progress 在全部 382 个类名里
    只属于 rK8Ova 一个模块，是安全且自解释的锚点。 */
-html body [class$="_frame"] [class$="_root"]:has([class$="_progress"]) {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_root"], [class*="_root "]):has(:is([class$="_progress"], [class*="_progress "])) {
   box-shadow: none;
 }
 
 /* H3 · 统一颜色过渡曲线（已逐条写在会变色的交互元素上：
    B7/B12/B15/C1/D3/D9/E18/F10/F13/F18/F20/F21/G3/G6）。
    这里补一条通用兜底，覆盖上面没点名的可点击 chrome，不动动画与 transform。 */
-html body [class$="_frame"] [class$="_iconButton"],
-html body [class$="_frame"] [class$="_panelRow"],
-html body [class$="_frame"] [class$="_tab"],
-html body [class$="_frame"] [class$="_trigger"] {
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_iconButton"], [class*="_iconButton "]),
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_panelRow"], [class*="_panelRow "]),
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_tab"], [class*="_tab "]),
+html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_trigger"], [class*="_trigger "]) {
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
 /* H4 · 关闭本文件引入的全部自定义动效 */
 @media (prefers-reduced-motion: reduce) {
-  html body [class$="_frame"] [class$="_iconButton"],
-  html body [class$="_frame"] [class$="_panelRow"],
-  html body [class$="_frame"] [class$="_tab"],
-  html body [class$="_frame"] [class$="_trigger"],
-  html body [class$="_frame"] [class$="_newSession"],
-  html body [class$="_frame"] [class$="_projectRow"],
-  html body [class$="_frame"] [class$="_sessionRow"],
-  html body [class$="_frame"] [class$="_crumb"],
-  html body [class$="_frame"] [class$="_toBottom"],
-  html body [class$="_composerSeat"] [class$="_add"],
-  html body [class$="_composerSeat"] [class$="_primary"],
-  html body [class$="_composerSeat"] [data-composer-stat] > *,
-  html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCol"] [class^="_tab_"] {
+  html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_iconButton"], [class*="_iconButton "]),
+  html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_panelRow"], [class*="_panelRow "]),
+  html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_tab"], [class*="_tab "]),
+  html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_trigger"], [class*="_trigger "]),
+  html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_newSession"], [class*="_newSession "]),
+  html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_projectRow"], [class*="_projectRow "]),
+  html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_sessionRow"], [class*="_sessionRow "]),
+  html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_crumb"], [class*="_crumb "]),
+  html body :is([class$="_frame"], [class*="_frame "]) :is([class$="_toBottom"], [class*="_toBottom "]),
+  html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_add"], [class*="_add "]),
+  html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_primary"], [class*="_primary "]),
+  html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-composer-stat] > *,
+  html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_rightbarCol"], [class*="_rightbarCol "]) :is([class^="_tab_"], [class*=" _tab_"]) {
     transition: none;
   }
 }
@@ -894,17 +894,17 @@ html body [class$="_frame"] [class$="_trigger"] {
    ---------------------------------------------------------------------------
    清单 C-63/C-64/C-65。这两个是 primitives，`createPortal(..., document.body)`
    挂到 body 上、在设置面板与 app frame 之外，所以作用域只能是 `html body` 本身，
-   不能挂 `[data-shortcut-modal]` 或 `[class$="_frame"]`。
+   不能挂 `[data-shortcut-modal]` 或 `:is([class$="_frame"], [class*="_frame "])`。
 
    选择器用 `[class^=]` + `[class*=" "]` 双写，不用 `[class$=]`：
    web-frontend 的约定是 `_<名字>_<hash>_<序号>`（如 `_item_4ub78_90`），
    后缀是易变数字，`[class$=]` 永远匹配不上。已实测这三个名字在
    web-frontend 的 335 个类名里各只属于一个模块（`_dialog_`→o6lrb、
    `_list_`/`_item_`/`_itemWrap_`→4ub78），所以前缀匹配不会误伤；
-   插件那套是 `hash_name`（无前导下划线），与 `[class^="_x_"]` 天然不相交。
+   插件那套是 `hash_name`（无前导下划线），与 `:is([class^="_x_"], [class*=" _x_"])` 天然不相交。
    双写是为了兜住 className 被拼成多类、目标类不在首位的元素。 */
 
-html body [class^="_dialog_"],
+html body :is([class^="_dialog_"], [class*=" _dialog_"]),
 html body [class*=" _dialog_"] {
   box-shadow: none;
   border: 0.5px solid var(--dsw-alias-border-l1);
@@ -912,31 +912,31 @@ html body [class*=" _dialog_"] {
   padding-bottom: 20px;
 }
 
-html body [class^="_dialog_"] [class^="_header_"],
-html body [class*=" _dialog_"] [class^="_header_"] {
+html body :is([class^="_dialog_"], [class*=" _dialog_"]) :is([class^="_header_"], [class*=" _header_"]),
+html body [class*=" _dialog_"] :is([class^="_header_"], [class*=" _header_"]) {
   padding: 16px 20px 8px;
 }
 
-html body [class^="_dialog_"] [class^="_title_"],
-html body [class*=" _dialog_"] [class^="_title_"] {
+html body :is([class^="_dialog_"], [class*=" _dialog_"]) :is([class^="_title_"], [class*=" _title_"]),
+html body [class*=" _dialog_"] :is([class^="_title_"], [class*=" _title_"]) {
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 500;
   letter-spacing: -0.04px;
 }
 
-html body [class^="_dialog_"] [class^="_body_"],
-html body [class*=" _dialog_"] [class^="_body_"] {
+html body :is([class^="_dialog_"], [class*=" _dialog_"]) :is([class^="_body_"], [class*=" _body_"]),
+html body [class*=" _dialog_"] :is([class^="_body_"], [class*=" _body_"]) {
   padding: 0 20px;
 }
 
-html body [class^="_dialog_"] [class^="_footer_"],
-html body [class*=" _dialog_"] [class^="_footer_"] {
+html body :is([class^="_dialog_"], [class*=" _dialog_"]) :is([class^="_footer_"], [class*=" _footer_"]),
+html body [class*=" _dialog_"] :is([class^="_footer_"], [class*=" _footer_"]) {
   padding: 0 20px 4px;
 }
 
 /* 下拉菜单：去掉 prominent 阴影，改用 opencode 的发丝边框 + 6px 圆角。
    `--dsw-radius-md` 经 tokens.json 已是 6px。 */
-html body [class^="_list_"],
+html body :is([class^="_list_"], [class*=" _list_"]),
 html body [class*=" _list_"] {
   box-shadow: none;
   border: 0.5px solid var(--dsw-alias-border-l1);
@@ -944,7 +944,7 @@ html body [class*=" _list_"] {
 }
 
 /* 菜单项对齐 opencode 的 28px 导航项节奏（原 34px / padding 6px 8px）。 */
-html body [class^="_item_"],
+html body :is([class^="_item_"], [class*=" _item_"]),
 html body [class*=" _item_"] {
   min-height: 28px;
   padding: 0 6px;
@@ -953,15 +953,15 @@ html body [class*=" _item_"] {
 }
 
 /* 紧凑变体原样保留自己的 24px 高度，别被上面的规则抬回去。 */
-html body [class*="_compactList"] [class^="_item_"],
+html body [class*="_compactList"] :is([class^="_item_"], [class*=" _item_"]),
 html body [class*="_compactList"] [class*=" _item_"],
-html body [class*="_denseList"] [class^="_item_"],
+html body [class*="_denseList"] :is([class^="_item_"], [class*=" _item_"]),
 html body [class*="_denseList"] [class*=" _item_"] {
   min-height: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html body [class^="_item_"],
+  html body :is([class^="_item_"], [class*=" _item_"]),
   html body [class*=" _item_"] {
     transition: none;
   }

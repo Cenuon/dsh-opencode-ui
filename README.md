@@ -48,13 +48,34 @@ plugin_manager  action=install_bundle  target=/Users/cenuon/Documents/默认项�
 源码在 `src/`，`client.js` 是**构建产物**：
 
 ```
-node build.mjs            # 生成 client.js
-node build.mjs --check    # 校验 client.js 是否与 src/ 同步（CI/验证用）
+node build.mjs                              # 生成 client.js
+node build.mjs --check                      # 校验 client.js 是否与 src/ 同步
+node tools/widen-class-selectors.mjs        # 加宽类名选择器（见下）
 ```
 
 `build.mjs` 只做字符串内联，无第三方依赖。它把 `src/tokens.json`、`src/settings.css`、`src/app.css`、`src/module.js` 合成一个 `window.__ModuleLoader__.load({ id, factory })` 文件 —— DSH 的 Client 每个插件只加载一个文件，`factory` 拿到的是模块表 `require`，没有相对路径 require，所以所有源码必须落进同一个文件。
 
 **改样式请改 `src/` 下的文件，不要直接改 `client.js`。**
+
+### ⚠️ 写选择器前必读：不要用裸的 `[class$="_x"]`
+
+DSH 用 `clsx` 拼 class，**状态类会和基础类拼在同一个属性里**。设置页激活的导航项，class 是：
+
+```
+kB3qhq_navCell kB3qhq_active      ← 不以 _navCell 结尾！
+```
+
+所以 `[class$="_navCell"]` 能命中所有**未激活**的项，却**永远命中不了激活项** —— 结果是选中那一行保留 DSH 出厂的 40px 蓝灰样式，旁边几行却是改造后的 28px 中性灰。这个 bug 在 v1 里存在，靠用户截图才量出来（选中项 39px vs 其它 28px）。
+
+正确写法是同时匹配「结尾」和「后面还跟着别的类」两种情况：
+
+```css
+:is([class$="_navCell"], [class*="_navCell "])
+```
+
+那个尾随空格是关键：`"_navCell "` 匹配不到 `"_navCellExtra"`，所以精度仍然等同于后缀匹配。`:is()` 取参数里最高的特异度，权重不变。
+
+`node tools/widen-class-selectors.mjs` 会自动做这个改写（幂等），`build.mjs` 里也有守卫：一旦 `src/` 里出现裸的 `[class$=]`/`[class^=]` 就直接构建失败。
 
 | 文件 | 职责 |
 |---|---|

@@ -42,6 +42,16 @@ for (const [label, css] of [['settings.css', settingsCss], ['app.css', appCss]])
   const closes = (css.match(/\}/g) ?? []).length;
   if (opens !== closes) problems.push(`${label}: unbalanced braces (${opens} "{" vs ${closes} "}")`);
   if (css.includes('</style')) problems.push(`${label}: must not contain "</style"`);
+  // A bare `[class$="_x"]` silently skips every element that also carries a state
+  // class, because clsx joins them into one attribute: the active settings nav
+  // cell is `kB3qhq_navCell kB3qhq_active`, which does not end with `_navCell`.
+  // That is how the selected row kept the shipped 40px bluish style while its
+  // siblings were restyled. Run tools/widen-class-selectors.mjs instead.
+  const stripped = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  const bare = (stripped.match(/(?<!:is\()\[class[\^$]="/g) ?? []).length;
+  if (bare > 0) {
+    problems.push(`${label}: ${bare} bare [class$=]/[class^=] selector(s) — run \`node tools/widen-class-selectors.mjs\``);
+  }
 }
 if (!/\bfunction apply\s*\(/.test(body)) problems.push('module.js: must declare "function apply("');
 if (problems.length > 0) {

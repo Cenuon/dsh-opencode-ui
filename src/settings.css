@@ -14,7 +14,7 @@
  *                改用 [class^="_名字_"]，或优先用 ARIA / data-* / 结构锚点。
  *   每个选择器都带祖先限定。设置面板用 [data-shortcut-modal="settings"] 作作用域
  *   前缀；面板自身的祖先（overlay / mask）用 :has(> [data-shortcut-modal="settings"])
- *   限定。裸写 [class$="_panel"] 会命中 12 个模块、[class$="_header"] 会命中 18 个。
+ *   限定。裸写 :is([class$="_panel"], [class*="_panel "]) 会命中 12 个模块、:is([class$="_header"], [class*="_header "]) 会命中 18 个。
  *
  * 字号策略（设计文档决策 2）
  *   DSH 的字号是用户可设偏好（--dsh-content-font-size，10–22px，默认 14px），
@@ -29,19 +29,19 @@
  *    （--dsh-frame-chrome-top 之上留给窗口拖拽区，与 DSH 自身 mask 的 inset 一致）。
  * ------------------------------------------------------------------------ */
 
-body > [class$="_overlay"]:has(> [data-shortcut-modal="settings"]) {
+body > :is([class$="_overlay"], [class*="_overlay "]):has(> [data-shortcut-modal="settings"]) {
   inset: var(--dsh-frame-chrome-top, 0px) 0 0;
   display: block;
 }
 
 /* 面板已铺满，遮罩永远看不见：去掉模糊与底色，避免全屏后仍有一层灰罩。 */
-body > [class$="_overlay"]:has(> [data-shortcut-modal="settings"]) > [class$="_mask"] {
+body > :is([class$="_overlay"], [class*="_overlay "]):has(> [data-shortcut-modal="settings"]) > :is([class$="_mask"], [class*="_mask "]) {
   inset: 0;
   background: transparent;
   backdrop-filter: none;
 }
 
-body > [class$="_overlay"] > [data-shortcut-modal="settings"] {
+body > :is([class$="_overlay"], [class*="_overlay "]) > [data-shortcut-modal="settings"] {
   /* 局部字号标尺：opencode 基准 13px / 次级 12px，叠加在用户的 DSH 基准之上。 */
   --ocui-fs-base: calc(13px + var(--dsh-content-font-delta, 0px));
   --ocui-fs-sm: calc(12px + var(--dsh-content-font-delta-secondary, 0px));
@@ -63,7 +63,7 @@ body > [class$="_overlay"] > [data-shortcut-modal="settings"] {
    宽 217px、左缘在 x=37.5。原来照 console 网页版的 180px/12px 内边距做，
    实测药丸只有 130px 宽、贴着窗口左缘，用户反馈「都挤着了」。
    改成 260px + 24px 内边距后药丸约 212px，与桌面版基本一致。 */
-[data-shortcut-modal="settings"] [class$="_nav"] {
+[data-shortcut-modal="settings"] :is([class$="_nav"], [class*="_nav "]) {
   gap: 16px;
   width: 260px;
   padding: 20px 24px 0;
@@ -74,25 +74,25 @@ body > [class$="_overlay"] > [data-shortcut-modal="settings"] {
    标题 y 21.5..30.5，交通灯 y 16..25.5，重叠）。用 --dsh-frame-top-clearance
    （darwin 48px）把导航内容推到窗口 chrome 以下，与桌面版设置页的做法一致
    —— 红绿灯浮在页面上、内容从它下方开始。 */
-html[data-platform="darwin"] [data-shortcut-modal="settings"] [class$="_nav"] {
+html[data-platform="darwin"] [data-shortcut-modal="settings"] :is([class$="_nav"], [class*="_nav "]) {
   padding-top: 52px;
 }
 
-[data-shortcut-modal="settings"] [class$="_navTitle"] {
+[data-shortcut-modal="settings"] :is([class$="_navTitle"], [class*="_navTitle "]) {
   padding: 0 8px;
   font-size: var(--ocui-fs-base);
   font-weight: 500;
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class$="_navList"] {
+[data-shortcut-modal="settings"] :is([class$="_navList"], [class*="_navList "]) {
   gap: 4px;
 }
 
 /* opencode 导航项：28px 高、6px 圆角、0 6px 内边距、13px/400。
    width:100% 是必需的：实测不写时药丸只有 130px 宽（收缩到内容宽度），
    与参考图「铺满导航列」不一致。 */
-[data-shortcut-modal="settings"] [class$="_navCell"] {
+[data-shortcut-modal="settings"] :is([class$="_navCell"], [class*="_navCell "]) {
   width: 100%;
   height: 28px;
   gap: 8px;
@@ -107,13 +107,13 @@ html[data-platform="darwin"] [data-shortcut-modal="settings"] [class$="_nav"] {
 /* hover 与激活同底色（opencode 实测 rgba(0,0,0,.08) 一档），无左侧色条、不加粗。
    激活态同时用 [aria-current] 和 [_active] 两个锚点：源码两者都有，双写后
    任一被改都还能命中。 */
-[data-shortcut-modal="settings"] [class$="_navCell"]:hover,
-[data-shortcut-modal="settings"] [class$="_navCell"][aria-current="true"],
-[data-shortcut-modal="settings"] [class$="_navCell"][class*="_active"] {
+[data-shortcut-modal="settings"] :is([class$="_navCell"], [class*="_navCell "]):hover,
+[data-shortcut-modal="settings"] :is([class$="_navCell"], [class*="_navCell "])[aria-current="true"],
+[data-shortcut-modal="settings"] :is([class$="_navCell"], [class*="_navCell "])[class*="_active"] {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
-[data-shortcut-modal="settings"] [class$="_navIcon"] {
+[data-shortcut-modal="settings"] :is([class$="_navIcon"], [class*="_navIcon "]) {
   flex: none;
   width: 16px;
   height: 16px;
@@ -125,12 +125,12 @@ html[data-platform="darwin"] [data-shortcut-modal="settings"] [class$="_nav"] {
  *    其它 _trigger 模块（全库 12 个）。
  * ------------------------------------------------------------------------ */
 
-body [class$="_triggerRow"]:has(> [aria-haspopup="dialog"][class$="_trigger"]) {
+body :is([class$="_triggerRow"], [class*="_triggerRow "]):has(> [aria-haspopup="dialog"]:is([class$="_trigger"], [class*="_trigger "])) {
   gap: 8px;
   margin: 4px -2px;
 }
 
-body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"] {
+body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dialog"]:is([class$="_trigger"], [class*="_trigger "]) {
   height: 28px;
   gap: 8px;
   padding: 0 6px;
@@ -141,7 +141,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"] {
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover {
+body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dialog"]:is([class$="_trigger"], [class*="_trigger "]):hover {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
@@ -151,43 +151,43 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
  *    action + close 行，只做轻量化，不新增元素、不用伪元素画假 UI。
  * ------------------------------------------------------------------------ */
 
-[data-shortcut-modal="settings"] [class$="_content"] {
+[data-shortcut-modal="settings"] :is([class$="_content"], [class*="_content "]) {
   min-height: 0;
 }
 
-[data-shortcut-modal="settings"] [class$="_header"] {
+[data-shortcut-modal="settings"] :is([class$="_header"], [class*="_header "]) {
   height: auto;
   align-items: center;
   padding: 8px 12px 0;
 }
 
-[data-shortcut-modal="settings"] [class$="_actions"] {
+[data-shortcut-modal="settings"] :is([class$="_actions"], [class*="_actions "]) {
   gap: 8px;
 }
 
-[data-shortcut-modal="settings"] [class$="_close"] {
+[data-shortcut-modal="settings"] :is([class$="_close"], [class*="_close "]) {
   width: 28px;
   height: 28px;
   border-radius: var(--dsw-radius-md);
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-[data-shortcut-modal="settings"] [class$="_close"]:hover {
+[data-shortcut-modal="settings"] :is([class$="_close"], [class*="_close "]):hover {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
 /* 全屏后内容列居中并限宽到 opencode 的 640px。
  * slot 宿主是 <div data-slot style="display:contents">，不产生盒子，所以真正的
  * flex item 是 slot 内部的 section 元素 —— 两条选择器都写上以兼容两种渲染。 */
-[data-shortcut-modal="settings"] [class$="_options"] {
+[data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 24px 24px 32px;
 }
 
-[data-shortcut-modal="settings"] [class$="_options"] > *,
-[data-shortcut-modal="settings"] [class$="_options"] > [data-slot] > * {
+[data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) > *,
+[data-shortcut-modal="settings"] :is([class$="_options"], [class*="_options "]) > [data-slot] > * {
   width: 100%;
   max-width: 640px;
   margin-inline: auto;
@@ -198,7 +198,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
  * ------------------------------------------------------------------------ */
 
 /* 行容器：opencode 卡片行 padding 20px 0 / gap 24 / 0.5px 分隔。 */
-[data-shortcut-modal="settings"] [class$="_row"] {
+[data-shortcut-modal="settings"] :is([class$="_row"], [class*="_row "]) {
   gap: 24px;
   padding: 20px 0;
   border-bottom-width: 0.5px;
@@ -207,22 +207,22 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
 }
 
 /* 首末行去掉外侧内边距（opencode 首行 padding-top:0、末行 padding-bottom:0）。 */
-[data-shortcut-modal="settings"] [class$="_row"]:first-child {
+[data-shortcut-modal="settings"] :is([class$="_row"], [class*="_row "]):first-child {
   padding-top: 0;
 }
 
-[data-shortcut-modal="settings"] [class$="_row"]:last-child {
+[data-shortcut-modal="settings"] :is([class$="_row"], [class*="_row "]):last-child {
   padding-bottom: 0;
   border-bottom: none;
 }
 
-[data-shortcut-modal="settings"] [class$="_title"] {
+[data-shortcut-modal="settings"] :is([class$="_title"], [class*="_title "]) {
   font-size: var(--ocui-fs-base);
   font-weight: 400;
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class$="_description"] {
+[data-shortcut-modal="settings"] :is([class$="_description"], [class*="_description "]) {
   margin-top: 4px;
   font-size: var(--ocui-fs-base);
   font-weight: 400;
@@ -230,61 +230,61 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
 }
 
 /* 卡片：边框宽度收敛到 0.5px 发丝线（颜色由 token 层负责）。 */
-[data-shortcut-modal="settings"] [class$="_card"],
-[data-shortcut-modal="settings"] [class$="_rowCard"],
-[data-shortcut-modal="settings"] [class$="_setupCard"],
-[data-shortcut-modal="settings"] [class$="_skeletonCard"] {
+[data-shortcut-modal="settings"] :is([class$="_card"], [class*="_card "]),
+[data-shortcut-modal="settings"] :is([class$="_rowCard"], [class*="_rowCard "]),
+[data-shortcut-modal="settings"] :is([class$="_setupCard"], [class*="_setupCard "]),
+[data-shortcut-modal="settings"] :is([class$="_skeletonCard"], [class*="_skeletonCard "]) {
   border-width: 0.5px;
   border-style: solid;
   box-shadow: none;
 }
 
 /* opencode 卡片内边距 20px。 */
-[data-shortcut-modal="settings"] [class$="_cardContent"],
-[data-shortcut-modal="settings"] [class$="_rowCard"] {
+[data-shortcut-modal="settings"] :is([class$="_cardContent"], [class*="_cardContent "]),
+[data-shortcut-modal="settings"] :is([class$="_rowCard"], [class*="_rowCard "]) {
   padding: 20px;
 }
 
 /* opencode 是单列文档流，不是双列卡片网格。
  * 只改 grid-template-columns（对 flex 列表无效，天然只命中 uuMOda_cards 的双列 grid），
  * 不动 gap —— 否则会连带清掉 syyOqq_cards 这个 flex 列表的间距。 */
-[data-shortcut-modal="settings"] [class$="_cards"] {
+[data-shortcut-modal="settings"] :is([class$="_cards"], [class*="_cards "]) {
   grid-template-columns: minmax(0, 1fr);
 }
 
 /* 分区容器：去掉各页自带的 720/760px 限宽（由 _options 统一到 640px），
  * 并把区块间距拉到 opencode 的 32px。 */
-[data-shortcut-modal="settings"] [class$="_section"] {
+[data-shortcut-modal="settings"] :is([class$="_section"], [class*="_section "]) {
   gap: 32px;
   max-width: none;
 }
 
-[data-shortcut-modal="settings"] [class$="_heading"] {
+[data-shortcut-modal="settings"] :is([class$="_heading"], [class*="_heading "]) {
   font-size: var(--ocui-fs-base);
   font-weight: 500;
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class$="_intro"] {
+[data-shortcut-modal="settings"] :is([class$="_intro"], [class*="_intro "]) {
   font-size: var(--ocui-fs-base);
   font-weight: 400;
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class$="_group"] + [class$="_group"] {
+[data-shortcut-modal="settings"] :is([class$="_group"], [class*="_group "]) + :is([class$="_group"], [class*="_group "]) {
   padding-top: 20px;
   border-top-width: 0.5px;
   border-top-style: solid;
   border-top-color: var(--dsw-alias-border-l2);
 }
 
-[data-shortcut-modal="settings"] [class$="_groupTitle"] {
+[data-shortcut-modal="settings"] :is([class$="_groupTitle"], [class*="_groupTitle "]) {
   font-size: var(--ocui-fs-base);
   font-weight: 400;
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class$="_switcher"] {
+[data-shortcut-modal="settings"] :is([class$="_switcher"], [class*="_switcher "]) {
   height: 28px;
   gap: 8px;
   padding: 0 8px;
@@ -295,7 +295,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-[data-shortcut-modal="settings"] [class$="_search"] input {
+[data-shortcut-modal="settings"] :is([class$="_search"], [class*="_search "]) input {
   height: 28px;
   padding: 0 32px 0 32px;
   border-width: 0.5px;
@@ -307,7 +307,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
 
 /* 下拉箭头原本是硬编码 %2381858C 的 data-URI，深色模式下不会变色。
  * 改用 currentColor 描边的内联 SVG，让箭头跟随文字色。 */
-[data-shortcut-modal="settings"] [class$="_selectInput"] {
+[data-shortcut-modal="settings"] :is([class$="_selectInput"], [class*="_selectInput "]) {
   height: 28px;
   border-radius: var(--dsw-radius-md);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
@@ -322,7 +322,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
  *    这些规则只在出现 ≥2 个 tab 时生效。
  * ------------------------------------------------------------------------ */
 
-[data-shortcut-modal="settings"] [class$="_tabs"] {
+[data-shortcut-modal="settings"] :is([class$="_tabs"], [class*="_tabs "]) {
   height: 48px;
   align-items: center;
   gap: 2px;
@@ -331,7 +331,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
   border-bottom-color: var(--dsw-alias-border-l2);
 }
 
-[data-shortcut-modal="settings"] [class$="_tab"] {
+[data-shortcut-modal="settings"] :is([class$="_tab"], [class*="_tab "]) {
   padding: 0 12px;
   font-size: var(--ocui-fs-base);
   font-weight: 400;
@@ -340,18 +340,18 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
 }
 
 /* 激活 tab：opencode 用字重 530 拉层级，下划线 1px、色取 border-inverse。 */
-[data-shortcut-modal="settings"] [class$="_tab"][data-active="true"] {
+[data-shortcut-modal="settings"] :is([class$="_tab"], [class*="_tab "])[data-active="true"] {
   font-weight: 500;
 }
 
-[data-shortcut-modal="settings"] [class$="_tab"][data-active="true"]::after {
+[data-shortcut-modal="settings"] :is([class$="_tab"], [class*="_tab "])[data-active="true"]::after {
   height: 1px;
   border-radius: 0;
   background: var(--dsw-alias-label-primary);
 }
 
 /* 聚焦不借用激活下划线指示器，避免与选中态混淆。 */
-[data-shortcut-modal="settings"] [class$="_tab"]:focus-visible::after {
+[data-shortcut-modal="settings"] :is([class$="_tab"], [class*="_tab "]):focus-visible::after {
   content: none;
 }
 
@@ -362,7 +362,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
  * ------------------------------------------------------------------------ */
 
 /* 值字段：纵向（标签在上、输入在下）→ opencode 的横向行（标签左、控件右）。 */
-[data-shortcut-modal="settings"] [class^="_field_"] {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -370,14 +370,14 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
   padding: 20px 0;
 }
 
-[data-shortcut-modal="settings"] [class^="_field_"] + [class^="_field_"] {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) + :is([class^="_field_"], [class*=" _field_"]) {
   border-top-width: 0.5px;
   border-top-style: solid;
   border-top-color: var(--dsw-alias-border-l2);
 }
 
 /* 横向后，左侧的标题块需要纵向堆叠（标题 + 说明/徽标）。 */
-[data-shortcut-modal="settings"] [class^="_field_"] > [class^="_head_"] {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) > :is([class^="_head_"], [class*=" _head_"]) {
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
@@ -385,40 +385,40 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
   min-width: 0;
 }
 
-[data-shortcut-modal="settings"] [class^="_field_"] > [class^="_head_"] > [class^="_labelGroup_"] {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) > :is([class^="_head_"], [class*=" _head_"]) > :is([class^="_labelGroup_"], [class*=" _labelGroup_"]) {
   flex: 1;
   min-width: 0;
 }
 
-[data-shortcut-modal="settings"] [class^="_field_"] [class^="_label_"] {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) :is([class^="_label_"], [class*=" _label_"]) {
   font-size: var(--ocui-fs-base);
   font-weight: 400;
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class^="_field_"] [class^="_helpButton_"] {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) :is([class^="_helpButton_"], [class*=" _helpButton_"]) {
   width: 20px;
   height: 20px;
   border-radius: var(--dsw-radius-md);
 }
 
-[data-shortcut-modal="settings"] [class^="_field_"] > [class^="_help_"] {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) > :is([class^="_help_"], [class*=" _help_"]) {
   padding-top: 8px;
   font-size: var(--ocui-fs-sm);
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class^="_field_"] > [class^="_head_"] > [class^="_badges_"] {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) > :is([class^="_head_"], [class*=" _head_"]) > :is([class^="_badges_"], [class*=" _badges_"]) {
   gap: 8px;
 }
 
-[data-shortcut-modal="settings"] [class^="_field_"] > [class^="_head_"] > [class^="_badges_"] button {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) > :is([class^="_head_"], [class*=" _head_"]) > :is([class^="_badges_"], [class*=" _badges_"]) button {
   font-size: var(--ocui-fs-sm);
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
 /* 输入框：0.5px 发丝边框、28px 高、与 opencode 控件节奏对齐。 */
-[data-shortcut-modal="settings"] [class^="_field_"] > input {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) > input {
   height: 28px;
   width: auto;
   min-width: 160px;
@@ -432,43 +432,43 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class^="_field_"] > input:focus-visible {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) > input:focus-visible {
   outline: none;
   border-color: var(--dsw-alias-state-business-primary);
   box-shadow: none;
 }
 
-[data-shortcut-modal="settings"] [class^="_field_"] > input[aria-invalid="true"] {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) > input[aria-invalid="true"] {
   border-color: var(--dsw-alias-state-error-primary);
 }
 
-[data-shortcut-modal="settings"] [class^="_field_"] > p {
+[data-shortcut-modal="settings"] :is([class^="_field_"], [class*=" _field_"]) > p {
   font-size: var(--ocui-fs-sm);
   line-height: 20px;
 }
 
 /* 表单框架：footer 与保存按钮。 */
-[data-shortcut-modal="settings"] [class^="_form_"] {
+[data-shortcut-modal="settings"] :is([class^="_form_"], [class*=" _form_"]) {
   gap: 0;
 }
 
-[data-shortcut-modal="settings"] [class^="_form_"] > p {
+[data-shortcut-modal="settings"] :is([class^="_form_"], [class*=" _form_"]) > p {
   margin-bottom: 12px;
   font-size: var(--ocui-fs-sm);
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class^="_form_"] > [class^="_footer_"] {
+[data-shortcut-modal="settings"] :is([class^="_form_"], [class*=" _form_"]) > :is([class^="_footer_"], [class*=" _footer_"]) {
   gap: 8px;
   padding-top: 20px;
 }
 
-[data-shortcut-modal="settings"] [class^="_form_"] > [class^="_footer_"] > p {
+[data-shortcut-modal="settings"] :is([class^="_form_"], [class*=" _form_"]) > :is([class^="_footer_"], [class*=" _footer_"]) > p {
   font-size: var(--ocui-fs-sm);
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class^="_form_"] > [class^="_footer_"] > button {
+[data-shortcut-modal="settings"] :is([class^="_form_"], [class*=" _form_"]) > :is([class^="_footer_"], [class*=" _footer_"]) > button {
   padding: 4px 12px;
   border-radius: var(--dsw-radius-md);
   font-size: var(--ocui-fs-base);
@@ -498,7 +498,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
 }
 
 /* 徽标（Tag）：同样去胶囊，改用 6px 圆角体系。 */
-[data-shortcut-modal="settings"] [class^="_tag_"] {
+[data-shortcut-modal="settings"] :is([class^="_tag_"], [class*=" _tag_"]) {
   padding: 1px 6px;
   border-radius: var(--dsw-radius-md);
   font-size: var(--ocui-fs-sm);
@@ -507,7 +507,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
 }
 
 /* 通用 Button：统一圆角与高度节奏。 */
-[data-shortcut-modal="settings"] [class^="_button_"] {
+[data-shortcut-modal="settings"] :is([class^="_button_"], [class*=" _button_"]) {
   border-radius: var(--dsw-radius-md);
   font-size: var(--ocui-fs-base);
   line-height: 20px;
@@ -515,24 +515,24 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-[data-shortcut-modal="settings"] [class^="_sm_"] {
+[data-shortcut-modal="settings"] :is([class^="_sm_"], [class*=" _sm_"]) {
   height: 28px;
   padding: 0 8px;
   border-radius: var(--dsw-radius-md);
   font-size: var(--ocui-fs-sm);
 }
 
-[data-shortcut-modal="settings"] [class^="_md_"] {
+[data-shortcut-modal="settings"] :is([class^="_md_"], [class*=" _md_"]) {
   height: 28px;
 }
 
 /* 分段控件：去大圆角、去指示器阴影。 */
-[data-shortcut-modal="settings"] [class^="_control_"] {
+[data-shortcut-modal="settings"] :is([class^="_control_"], [class*=" _control_"]) {
   padding: 2px;
   border-radius: var(--dsw-radius-md);
 }
 
-[data-shortcut-modal="settings"] [class^="_control_"] [class^="_indicator_"] {
+[data-shortcut-modal="settings"] :is([class^="_control_"], [class*=" _control_"]) :is([class^="_indicator_"], [class*=" _indicator_"]) {
   top: 2px;
   left: 2px;
   height: calc(100% - 4px);
@@ -540,7 +540,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
   box-shadow: none;
 }
 
-[data-shortcut-modal="settings"] [class^="_control_"] [class^="_tab_"] {
+[data-shortcut-modal="settings"] :is([class^="_control_"], [class*=" _control_"]) :is([class^="_tab_"], [class*=" _tab_"]) {
   height: 24px;
   padding: 0 12px;
   border-radius: var(--dsw-radius-xs);
@@ -549,12 +549,12 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-[data-shortcut-modal="settings"] [class^="_tabs_"] {
+[data-shortcut-modal="settings"] :is([class^="_tabs_"], [class*=" _tabs_"]) {
   padding: 2px;
   border-radius: var(--dsw-radius-md);
 }
 
-[data-shortcut-modal="settings"] [class^="_tabs_"] [class^="_indicator_"] {
+[data-shortcut-modal="settings"] :is([class^="_tabs_"], [class*=" _tabs_"]) :is([class^="_indicator_"], [class*=" _indicator_"]) {
   inset: 2px auto 2px 2px;
   border-width: 0.5px;
   border-style: solid;
@@ -563,7 +563,7 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
   box-shadow: none;
 }
 
-[data-shortcut-modal="settings"] [class^="_tabs_"] [class^="_tab_"] {
+[data-shortcut-modal="settings"] :is([class^="_tabs_"], [class*=" _tabs_"]) :is([class^="_tab_"], [class*=" _tab_"]) {
   height: 28px;
   padding: 0 12px;
   border-radius: var(--dsw-radius-xs);
@@ -584,14 +584,14 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
  * 应交给 app.css 全局统一处理。 */
 
 /* Models 页自有的字段/输入（tUAPGa_*，插件命名，后缀稳定）。 */
-[data-shortcut-modal="settings"] [class$="_fieldLabel"] {
+[data-shortcut-modal="settings"] :is([class$="_fieldLabel"], [class*="_fieldLabel "]) {
   gap: 8px;
   font-size: var(--ocui-fs-sm);
   font-weight: 400;
   line-height: 18px;
 }
 
-[data-shortcut-modal="settings"] [class$="_input"] {
+[data-shortcut-modal="settings"] :is([class$="_input"], [class*="_input "]) {
   height: 28px;
   padding: 0 8px;
   border-width: 0.5px;
@@ -602,17 +602,17 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
   line-height: 20px;
 }
 
-[data-shortcut-modal="settings"] [class$="_editor"] {
+[data-shortcut-modal="settings"] :is([class$="_editor"], [class*="_editor "]) {
   gap: 16px;
   padding: 16px 0;
   border-radius: var(--dsw-radius-md);
 }
 
-[data-shortcut-modal="settings"] [class$="_rowHead"] {
+[data-shortcut-modal="settings"] :is([class$="_rowHead"], [class*="_rowHead "]) {
   gap: 8px;
 }
 
-[data-shortcut-modal="settings"] [class$="_rowName"] {
+[data-shortcut-modal="settings"] :is([class$="_rowName"], [class*="_rowName "]) {
   font-size: var(--ocui-fs-base);
   font-weight: 500;
   line-height: 20px;
@@ -623,16 +623,16 @@ body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"]:hover 
  * ------------------------------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
-  [data-shortcut-modal="settings"] [class$="_navCell"],
-  [data-shortcut-modal="settings"] [class$="_close"],
-  [data-shortcut-modal="settings"] [class$="_tab"],
-  [data-shortcut-modal="settings"] [class$="_switcher"],
-  [data-shortcut-modal="settings"] [class$="_input"],
-  [data-shortcut-modal="settings"] [class^="_button_"],
-  [data-shortcut-modal="settings"] [class^="_tab_"],
-  [data-shortcut-modal="settings"] [class^="_control_"] [class^="_tab_"],
+  [data-shortcut-modal="settings"] :is([class$="_navCell"], [class*="_navCell "]),
+  [data-shortcut-modal="settings"] :is([class$="_close"], [class*="_close "]),
+  [data-shortcut-modal="settings"] :is([class$="_tab"], [class*="_tab "]),
+  [data-shortcut-modal="settings"] :is([class$="_switcher"], [class*="_switcher "]),
+  [data-shortcut-modal="settings"] :is([class$="_input"], [class*="_input "]),
+  [data-shortcut-modal="settings"] :is([class^="_button_"], [class*=" _button_"]),
+  [data-shortcut-modal="settings"] :is([class^="_tab_"], [class*=" _tab_"]),
+  [data-shortcut-modal="settings"] :is([class^="_control_"], [class*=" _control_"]) :is([class^="_tab_"], [class*=" _tab_"]),
   [data-shortcut-modal="settings"] button[role="switch"],
-  body [class$="_triggerRow"] > [aria-haspopup="dialog"][class$="_trigger"] {
+  body :is([class$="_triggerRow"], [class*="_triggerRow "]) > [aria-haspopup="dialog"]:is([class$="_trigger"], [class*="_trigger "]) {
     transition: none;
   }
 

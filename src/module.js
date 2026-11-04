@@ -121,8 +121,8 @@ const OWN_CSS = [
   // the same ancestor-qualified convention as the rest of the skin; `!important`
   // stays because hiding is the whole point and the sidebar rules these beat
   // are compound selectors that can gain specificity between releases.
-  'html body [class$="_logoRow"]{display:none!important}',
-  'html body button[class$="_newSession"]{display:none!important}',
+  'html body :is([class$="_logoRow"], [class*="_logoRow "]){display:none!important}',
+  'html body button:is([class$="_newSession"], [class*="_newSession "]){display:none!important}',
 ].join('\n');
 
 const STYLES = [SETTINGS_CSS, APP_CSS, OWN_CSS].filter(Boolean).join('\n');
