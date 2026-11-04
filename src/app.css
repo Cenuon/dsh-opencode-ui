@@ -452,8 +452,21 @@ html body :is([class$="_frame"], [class*="_frame "]) > :is([class$="_centerCol"]
    ========================================================================== */
 
 /* E1 · 消息区行内边距：opencode 卡片内边距 20px。
-   _scroll 有 2 个模块（tnXGgG 聊天 / JZLxKW composer），必须限定。 */
-html body [data-conversation-scroll] :is([class$="_scroll"], [class*="_scroll "]) {
+ *
+ * ★★★ 这条曾经误伤 composer。原写法是
+ *     [data-conversation-scroll] :is([class$="_scroll"], [class*="_scroll "])
+ *   —— `:is([class$="_scroll"], [class*="_scroll "])` **同时命中了 composer 的 `JZLxKW_scroll`**
+ *   （输入框的文本容器）。DSH 出厂给它只有 `margin-right:4px`，没有 padding，
+ *   被我加上了 `20px 36px`。实测（DevTools 父链 dump）：
+ *     JZLxKW_scroll  pad: 20px 36px      ← 被我加的
+ *     JZLxKW_card    x=348
+ *     JZLxKW_input   x=385   348 + 36 = 384 ≈ 385
+ *   于是输入框左侧凭空多出 37px、顶部多出 20px，用户反馈「输入框留白太多」。
+ *
+ *   加 `:not(:is([class$="_card"], [class*="_card "]) *)` 把 composer 排除掉
+ *   —— 它的 `_scroll` 是 `_card` 的后代，而聊天区的 `tnXGgG_scroll` 不是。
+ *   （即便聊天区也被判定在 _card 内，也只是退回 DSH 自己的 16px，无副作用。） */
+html body [data-conversation-scroll] :is([class$="_scroll"], [class*="_scroll "]):not(:is([class$="_card"], [class*="_card "]) *) {
   padding: 20px calc(var(--dsh-composer-side-clearance) + 20px);
 }
 
