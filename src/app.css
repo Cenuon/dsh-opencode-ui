@@ -776,11 +776,28 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
  *    `box-shadow: inset 0 0 0 0.5px` 留出内缩空间；左边距一旦归零，
  *    tbody 的 background 就会盖住那条 0.5px 发丝线，**左边框看起来缺了一段**
  *    （用户反馈）。DSH 的 `.md-table-wide{padding-left:var(--dsh-table-lead)}`
- *    特异度只有 (0,2,0)，本来就被 E5c 的 `padding: 2px` 压住，不用再声明。 */
-html body [data-conversation-scroll] .md-table-wide {
+ *    特异度只有 (0,2,0)，本来就被 E5c 的 `padding: 2px` 压住，不用再声明。
+ *
+ * ★★★ 悬停时底部多一条灰带 —— 也是 DSH 这套设计的一部分：
+ *     ._tableScroll_.md-table-wide        { overflow-x:hidden; padding-bottom:5px }
+ *     ._tableScroll_.md-table-wide:hover  { overflow-x:scroll; padding-bottom:0 }
+ *   平时用 hidden + 预留 5px 占位，悬停才切成 scroll，滚动条落在那 5px 里。
+ *   本插件关掉出血后表格通常不需要横向滚动，于是那条滚动槽是**空的**，
+ *   看起来就是「凭空多出一条灰色区域」。
+ *   改成 `overflow-x: auto`（需要才出滚动条）+ 保持 2px 底边距（护住底部发丝线）。
+ *
+ *   ⚠️ 必须同时写 `:hover` 变体：DSH 的悬停规则
+ *   `._tableScroll_.md-table-wide:hover` 特异度是 (0,3,0)，
+ *   高于不带 hover 的 (0,2,2)，只写前者会被它在悬停时压回去。
+ *   带 hover 后是 (0,3,2) ✓。 */
+html body [data-conversation-scroll] .md-table-wide,
+html body [data-conversation-scroll] .md-table-wide:hover,
+html body [data-conversation-scroll] .md-table-wide:focus-visible {
   width: 100%;
   max-width: 100%;
   margin-left: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
 
 /* E5g · 代码块内边距：用户两次反馈留白太多。
