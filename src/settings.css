@@ -59,14 +59,27 @@ body > [class$="_overlay"] > [data-shortcut-modal="settings"] {
  * 2. 左导航                                             [C-16 ~ C-22]
  * ------------------------------------------------------------------------ */
 
+/* 左导航宽度按 OpenCode 桌面版设置页实测反推（截图缩放 2.0）：它的激活药丸
+   宽 217px、左缘在 x=37.5。原来照 console 网页版的 180px/12px 内边距做，
+   实测药丸只有 130px 宽、贴着窗口左缘，用户反馈「都挤着了」。
+   改成 260px + 24px 内边距后药丸约 212px，与桌面版基本一致。 */
 [data-shortcut-modal="settings"] [class$="_nav"] {
   gap: 16px;
-  width: 180px;
-  padding: 20px 12px 0;
+  width: 260px;
+  padding: 20px 24px 0;
+}
+
+/* macOS 窗口的红绿灯浮在页面左上角，而 --dsh-frame-chrome-top 在 darwin 下是
+   0px，所以铺满的面板会让导航标题「设置」正好压在交通灯底下（用户截图实测：
+   标题 y 21.5..30.5，交通灯 y 16..25.5，重叠）。用 --dsh-frame-top-clearance
+   （darwin 48px）把导航内容推到窗口 chrome 以下，与桌面版设置页的做法一致
+   —— 红绿灯浮在页面上、内容从它下方开始。 */
+html[data-platform="darwin"] [data-shortcut-modal="settings"] [class$="_nav"] {
+  padding-top: 52px;
 }
 
 [data-shortcut-modal="settings"] [class$="_navTitle"] {
-  padding: 0 12px;
+  padding: 0 8px;
   font-size: var(--ocui-fs-base);
   font-weight: 500;
   line-height: 20px;
@@ -76,8 +89,11 @@ body > [class$="_overlay"] > [data-shortcut-modal="settings"] {
   gap: 4px;
 }
 
-/* opencode 导航项：28px 高、6px 圆角、0 6px 内边距、13px/400。 */
+/* opencode 导航项：28px 高、6px 圆角、0 6px 内边距、13px/400。
+   width:100% 是必需的：实测不写时药丸只有 130px 宽（收缩到内容宽度），
+   与参考图「铺满导航列」不一致。 */
 [data-shortcut-modal="settings"] [class$="_navCell"] {
+  width: 100%;
   height: 28px;
   gap: 8px;
   padding: 0 6px;
@@ -88,9 +104,12 @@ body > [class$="_overlay"] > [data-shortcut-modal="settings"] {
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-/* hover 与激活同底色（opencode 用 rgba(0,0,0,.08) 一档），无左侧色条、不加粗。 */
+/* hover 与激活同底色（opencode 实测 rgba(0,0,0,.08) 一档），无左侧色条、不加粗。
+   激活态同时用 [aria-current] 和 [_active] 两个锚点：源码两者都有，双写后
+   任一被改都还能命中。 */
 [data-shortcut-modal="settings"] [class$="_navCell"]:hover,
-[data-shortcut-modal="settings"] [class$="_navCell"][aria-current="true"] {
+[data-shortcut-modal="settings"] [class$="_navCell"][aria-current="true"],
+[data-shortcut-modal="settings"] [class$="_navCell"][class*="_active"] {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 

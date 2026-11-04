@@ -150,7 +150,7 @@ html:not([data-windows-titlebar]) body [class$="_frame"]:has(> [class$="_sidebar
 /* B5 · 品牌名：opencode 无大字品牌名，收进 13px 字阶。
    这是组件 chrome（原本硬编码 18px），不是用户偏好驱动的字号。 */
 html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol"] [class$="_brandName"] {
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 500;
   line-height: 20px;
   letter-spacing: -0.04px;
@@ -175,7 +175,7 @@ html:not([data-windows-titlebar]) body [class$="_frame"]:has(> [class$="_sidebar
   border-radius: var(--dsw-radius-md);
   border: 0.5px solid var(--dsw-alias-border-l2);
   background: transparent;
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 400;
   line-height: 20px;
   letter-spacing: -0.04px;
@@ -204,7 +204,7 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_sidebarCol
   gap: 8px;
   margin: 0;
   padding: 0 6px;
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 400;
   line-height: 20px;
   letter-spacing: -0.04px;
@@ -281,7 +281,7 @@ html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"][class$
    _title 有 8 个模块，必须限定在 projectRow / sessionRow 内。 */
 html body [class$="_frame"] [class$="_regionArea"] [class$="_projectRow"] [class$="_title"],
 html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"] [class$="_title"] {
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
   font-weight: 400;
   letter-spacing: -0.04px;
@@ -296,7 +296,7 @@ html body [class$="_frame"] [class$="_regionArea"] [class$="_meta"] {
 
 /* C7 · 时间戳：10px 低于 opencode 最小字号，提到 12px */
 html body [class$="_frame"] [class$="_regionArea"] [class$="_sessionRow"] [class$="_time"] {
-  font-size: 12px;
+  font-size: calc(12px + var(--dsh-content-font-delta, 0px));
   line-height: 16px;
   color: var(--dsw-alias-label-secondary);
 }
@@ -345,7 +345,7 @@ html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phas
 html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_crumb"] {
   border-radius: var(--dsw-radius-md);
   padding: 0 8px;
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
   letter-spacing: -0.04px;
   transition: background-color 85ms ease-out, color 85ms ease-out;
@@ -360,7 +360,7 @@ html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phas
 /* D5 · 面包屑分隔符 */
 html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_crumbSep"] {
   color: var(--dsw-alias-label-tertiary);
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
 }
 
@@ -389,7 +389,7 @@ html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phas
 
 /* D9 · 单个 tab：opencode 未激活 = gray、weight 440 → 400，line-height 16.25px */
 html body [class$="_frame"] > [class$="_centerCol"] > [class$="_root"][data-phase] > [class$="_header"] [class$="_tab"] {
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 400;
   line-height: 16.25px;
   padding: 0 8px;
@@ -501,7 +501,7 @@ html body [class$="_frame"] [class$="_attachmentRow"] [class$="_fileCard"] {
 
 /* E8 · 附件文件名 */
 html body [class$="_frame"] [class$="_attachmentRow"] [class$="_fileName"] {
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 500;
   line-height: 20px;
 }
@@ -531,7 +531,7 @@ html body [data-conversation-scroll] [data-tool] [class$="_ioSection"] {
 /* E12 · IO 标签 */
 html body [data-conversation-scroll] [data-tool] [class$="_ioLabel"] {
   color: var(--dsw-alias-label-secondary);
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
 }
 
@@ -544,7 +544,7 @@ html body [data-conversation-scroll] [data-tool] [class$="_bodyScroll"] {
 html body [data-conversation-scroll] [data-tool] [class$="_inspectButton"] {
   border: 0.5px solid var(--dsw-alias-border-l2);
   border-radius: var(--dsw-radius-md);
-  font-size: 12px;
+  font-size: calc(12px + var(--dsh-content-font-delta, 0px));
   padding: 2px 8px;
 }
 
@@ -585,7 +585,7 @@ html body [class$="_frame"] [class$="_runningDivider"] {
 html body [class$="_frame"] [class$="_stopped"] {
   border-radius: var(--dsw-radius-md);
   background: var(--dsw-alias-interactive-bg-hover);
-  font-size: 12px;
+  font-size: calc(12px + var(--dsh-content-font-delta, 0px));
   line-height: 18px;
 }
 
@@ -670,43 +670,53 @@ html body [class$="_composerSeat"] [class$="_add"]:hover:not(:disabled) {
 html body [class$="_composerSeat"] [class$="_select"] {
   height: 28px;
   border-radius: var(--dsw-radius-md);
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 400;
   line-height: 20px;
 }
 
-/* F13 · 主按钮：opencode 是 6px 圆角矩形，不是 999px 胶囊，且不做位移 */
+/* F13 · 主按钮：opencode 用「反色实底」而不是品牌蓝，形状是 6px 圆角矩形、
+   不做位移。出厂样式是 background:var(--dsw-alias-button-info-fill)（DeepSeek
+   蓝 #4276E6）+ color:#fff + border-radius:999px + translateY(-2px)。
+   ★ color 必须一起覆盖：出厂把图标色写死成 #fff，而反色底在深色下是近白
+   #fafafa，只改 background 会得到白底白箭头。 */
 html body [class$="_composerSeat"] [class$="_primary"] {
   width: 30px;
   height: 30px;
   border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-label-primary);
+  color: var(--dsw-alias-bg-base);
   transform: none;
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
 
-/* F14 · 主按钮悬停色由 var(--dsw-alias-button-info-hover) 在 token 层指向
-   opencode 的 accent-hover，结构层无需重复。 */
+/* F14 · 主按钮悬停：反色底在两级灰之间过渡（出厂走 button-info-hover，
+   那是品牌蓝系，与反色底不搭）。 */
+html body [class$="_composerSeat"] [class$="_primary"]:hover:not(:disabled) {
+  background: var(--dsw-alias-label-secondary);
+  color: var(--dsw-alias-bg-base);
+}
 
 /* F15 · :disabled 的 opacity:.4 保持不动。 */
 
 /* F16 · ★ 状态行（conversation.composer.dock）。
-   对齐 opencode 卡片行：space-between + 0.5px 上分隔。
-   注意 dock 原本是 shrink-to-fit（父级 align-items:center），justify-content
-   对收缩宽度无效，所以必须显式给宽度才能得到左右分布。
+   DSH 出厂是 `justify-content:center` + gap 12px（收缩宽度下居中成一组）。
+   早期版本改成了 space-between + 全宽 + 上分隔，实测在宽窗口下会把四项
+   拉散到整行两端，观感很糟（用户截图确认）。改回紧排一组、与卡片左缘对齐，
+   并去掉那条上分隔线 —— 状态行是卡片的附属信息，不该长出一条横贯整屏的线。
    保留 dock 的可见性与位置——git 分支状态项照常可用。 */
 html body [class$="_composerSeat"] [data-composer-dock] {
   width: 100%;
   max-width: var(--dsh-composer-card-max-width);
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   gap: 8px;
-  padding: 8px 4px 0;
-  border-top: 0.5px solid var(--dsw-alias-border-l2);
+  padding: 4px 2px 0;
 }
 
 /* F17 · 状态行内的直接子项统一到 13px/20px 灰阶（chrome 字号，非用户偏好） */
 html body [class$="_composerSeat"] [data-composer-dock] > * {
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
   color: var(--dsw-alias-label-secondary);
 }
@@ -718,7 +728,7 @@ html body [class$="_composerSeat"] [data-composer-dock] [data-composer-stat] {
   border-radius: var(--dsw-radius-md);
   gap: 6px;
   padding: 0;
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
   letter-spacing: -0.04px;
 }
@@ -743,7 +753,7 @@ html body [class$="_composerSeat"] [data-composer-dock] [class$="_trigger"] {
   border-radius: var(--dsw-radius-md);
   gap: 6px;
   padding: 0;
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
@@ -767,7 +777,7 @@ html body [class$="_composerSeat"] [class$="_notice"] {
   border-radius: var(--dsw-radius-md);
   background: var(--dsw-alias-bg-layer-1);
   border: 0.5px solid var(--dsw-alias-border-l2);
-  font-size: 12px;
+  font-size: calc(12px + var(--dsh-content-font-delta, 0px));
   line-height: 18px;
 }
 
@@ -793,7 +803,7 @@ html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCo
 /* G4 · 不可用提示：opencode 卡片内边距 20px */
 html body [class$="_frame"]:has(> [class$="_sidebarCol"]) > [class$="_rightbarCol"] [class$="_unavailable"] {
   color: var(--dsw-alias-label-secondary);
-  font-size: 13px;
+  font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   line-height: 20px;
   padding: 20px;
 }
