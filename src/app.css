@@ -214,6 +214,16 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
   padding-bottom: 4px;
 }
 
+/* B18 · 工作区（项目）列表行收紧。
+ *
+ * 用户反馈「项目之间还是有点松」。实测 DSH 原生
+ * `JoiKIa_projectRow { height: 34px }`，加上行间距后每行约占 40px
+ * （截图缩放 2.07：行距 84 img px ÷ 2.07 ≈ 40.5）。上面导航行是 26px，
+ * 两者差了一档，所以项目列表看着更松。收到 26px 对齐。 */
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_projectRow"], [class*="_projectRow "]) {
+  height: 26px;
+}
+
 /* B11 · 面板列表：区块间距与行间距。
  *
  * ★ 这里原本写的是 `gap:4px; margin-bottom:32px` —— 比 DSH 原生的
