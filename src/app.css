@@ -493,32 +493,48 @@ html body [data-conversation-scroll] :is([class$="_scroll"], [class*="_scroll "]
  *   用 `:has()` 精确定位它，特异度 (0,2,2) 高于 DSH 的 (0,1,0)。
  *
  * 想再调就改 --ocui-chat-edge-budget 一个数（两侧合计留白）：
- *   96 = 每侧 48px（当前）· 64 = 每侧 32px 更满 · 176 = 还原 DSH 原样。 */
+ *   128 = 每侧 64px（当前）· 176 = 还原 DSH 原样。
+ *
+ * ★★★ 这个值有**几何下限**，不能随便往下调。
+ *   设容器宽 C、每侧留白 M = budget/2，实测三个东西的占位：
+ *     内容右边缘 = C − M
+ *     拖动手柄   = [C − M + 24, C − M + 34]   （DSH 把手柄放在内容外 24px）
+ *     会话导轨   = [C − 40, C − 12]           （right:12px + width:28px）
+ *   要不和导轨重叠需要 C − M + 34 ≤ C − 40  →  **M ≥ 74**。
+ *   之前设 96（M=48）时手柄落在 [C−24, C−14]，整个陷进导轨里；
+ *   而且连内容本身（边缘 C−48）都已经压到导轨起点 C−40 上。
+ *   所以这里取 128（M=64），并把手柄的外偏移从 24px 收到 8px（见 E1c），
+ *   两者配合后：内容边缘离导轨 24px，手柄 [C−56, C−46] 离导轨 6px，都不重叠。 */
 html body :is([class$="_body"], [class*="_body "]):has([data-conversation-scroll]) {
-  --ocui-chat-edge-budget: 96px;
+  --ocui-chat-edge-budget: 128px;
   --dsh-chat-content-width: min(
     calc(var(--dsh-conversation-column-width, 100%) - var(--ocui-chat-edge-budget)),
-    calc(var(--dsh-chat-user-width, calc(var(--dsh-conversation-column-width, 100%) - 176px)) + 80px)
+    calc(var(--dsh-chat-user-width, calc(var(--dsh-conversation-column-width, 100%) - 176px)) + 48px)
   );
 }
 
-/* E1c · 拖动手柄宽度：显式给值，不让它塌成 0。
+/* E1c · 拖动手柄：显式给宽度，并把外偏移从 24px 收到 8px。
  *
  * DSH 出厂：
  *   .kiGsTW_widthHandle{ width: min(10px, calc((100% - var(--dsh-chat-content-width)) / 2 - 48px)) }
  *   .kiGsTW_widthHandle[data-side=left]{ right: calc(50% + var(--dsh-chat-content-width) / 2 + 24px) }
- * 手柄右边缘在「内容边缘往外 24px」，宽度取 min(10px, 每侧留白 - 48px)。
- * 那个 48 = 24（离内容边缘）+ 24（离容器边缘）的双侧余量。
+ *   .kiGsTW_widthHandle[data-side=right]{ left:  calc(50% + var(--dsh-chat-content-width) / 2 + 24px) }
  *
- * E1b 把两侧合计留白从 176px 收到 96px 后，每侧只剩 48px：
- *   min(10px, 48 - 48) = min(10px, 0) = **0** → 手柄整个消失
- * （用户反馈「拖到最宽后拖动手柄就不见了」）。
- *
- * 实测手柄的占位是「内容边缘外 24..34px」，只要每侧留白 ≥ 34px 就放得下，
- * 而 96px 预算给的是 48px，余量充足。所以直接给 10px，不再依赖那个会塌的公式。
- * 特异度 (0,1,2) 高于 DSH 的 (0,1,0)。 */
+ * 两个问题：
+ *   1) 宽度公式 min(10px, 每侧留白 − 48px) 在留白 ≤ 48px 时会塌成 0
+ *      → 手柄整个消失（用户反馈「拖到最宽后手柄不见了」）。显式给 10px。
+ *   2) 外偏移 24px 在留白收窄后会把柄推进导轨里（见 E1b 的几何说明），收到 8px。
+ * 手柄占位变成 [C−M+8, C−M+18]，M=64 时是 [C−56, C−46]，离导轨左缘 C−40 还有 6px。 */
 html body [data-width-handle] {
   width: 10px;
+}
+
+html body [data-width-handle][data-side="left"] {
+  right: calc(50% + var(--dsh-chat-content-width) / 2 + 8px);
+}
+
+html body [data-width-handle][data-side="right"] {
+  left: calc(50% + var(--dsh-chat-content-width) / 2 + 8px);
 }
 
 /* E1d · 会话导轨（turn navigator）的显示阈值：900px -> 640px。
