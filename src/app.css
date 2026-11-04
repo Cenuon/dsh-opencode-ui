@@ -484,6 +484,58 @@ html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markd
   line-height: calc(20px + var(--dsh-content-font-delta, 0px));
 }
 
+/* E5b · Markdown 标题：统一到正文字号。
+ *
+ * 用户反馈「对话区这种排版很丑，我需要保持所有文字大小一致」。实测 DSH 的
+ * 出厂字阶（读 --dsw-font-markdown-* token）在同一段对话里用了**五种字号**：
+ *   正文 14px 400 · h1/h2/h3 21/19/18px 700 · 表格 13px · 行内代码 12px · 代码块 11px
+ * 标题的 21px/700 是视觉上最刺眼的一处。
+ *
+ * DSH 自己其实有一套「标题不放大」的变体（._compact_ 里
+ * `:is(h1,h2,h3,h4,h5,h6){font:inherit;font-weight:600;color:inherit}`），
+ * 对话区没用它。这里把同样的处理套到对话区 markdown 上：字号**继承正文**
+ * （所以自动跟随用户的字号偏好，不写死 px），只用字重和间距区分层级。 */
+html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  font-weight: 600;
+  margin: 20px 0 8px;
+}
+
+html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) > :is(h1, h2, h3, h4, h5, h6):first-child {
+  margin-top: 0;
+}
+
+/* E5c · Markdown 表格：对齐用户给的参考图，并把字号统一到正文。
+ *
+ * 参考图实测：表头填充 #fafafa、表体 #fff、外框 0.5px 发丝线 + 6px 圆角、
+ * 行间 0.5px 分隔、无竖线。
+ * DSH 出厂只给了 th/td 的 border-bottom（`._tableScroll_ table th/td`），
+ * 没有外框、没有表头底色；字号则是 13px，比正文小一档。
+ * 这里显式补齐外框与表头底色，并把字号拉回正文。 */
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) {
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-bg-base);
+}
+
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) th {
+  background: var(--dsw-alias-bg-layer-1);
+  color: var(--dsw-alias-label-secondary);
+  font-size: calc(14px + var(--dsh-content-font-delta, 0px));
+  line-height: calc(22px + var(--dsh-content-font-delta, 0px));
+  border-bottom-color: var(--dsw-alias-border-l2);
+}
+
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) td {
+  font-size: calc(14px + var(--dsh-content-font-delta, 0px));
+  line-height: calc(22px + var(--dsh-content-font-delta, 0px));
+}
+
+/* 末行不画线，避免和外框叠成双线（和设置页那个「两条杠」是同一类问题）。 */
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) tbody tr:last-child td {
+  border-bottom: none;
+}
+
 /* E6 · 不做。清单要求把 markdown 体 gap 16→20px，但 AssistantMarkdown 的
    _body 只能靠「祖先 + 类名」双重限定才能避开 _body 的另外 6 个模块
    （r52wTW / ft5itq / UHhYua / rK8Ova …），而它的祖先链里没有稳定语义锚点，
