@@ -462,7 +462,7 @@ html body [data-conversation-scroll] :is([class$="_scroll"], [class*="_scroll "]
  * 用户反馈「DSH 有个可以拖动调宽度的组件，但拖到一定程度就拖不动了，
  * 希望可以继续多拖一点，也不是一点距离都不留，而是少留一点」。
  *
- * 限制来源查清了（`dsh-client-ui-conversation/lib/client.js`）：
+ * 限制来源（`dsh-client-ui-conversation/lib/client.js`）：
  *   const CONTENT_EDGE_BUDGET = 176;   // 两侧合计留 176px
  *   const CONTENT_MIN = 640;
  *   function resolveContentWidth(columnWidth, preference) {
@@ -471,19 +471,30 @@ html body [data-conversation-scroll] :is([class$="_scroll"], [class*="_scroll "]
  *     return Math.max(680, Math.min(columnWidth * .64, 920));
  *   }
  * 拖动把偏好写进 localStorage，JS 算出**已夹过上限**的值写进
- * `--dsh-chat-user-width`，CSS 再 var() 读它。
+ * `--dsh-chat-user-width`，CSS 再 var() 读它。所以撞到「列宽 − 176」就拖不动。
  *
- * ★ 那 176px 是 **JS 常量，纯 CSS 改不了** —— 所以这里绕开它：
- *   把 JS 夹过的值**加回差值**（176 - 96 = 80px），同时用「列宽 - 96px」
- *   兜住上限。效果：
- *     拖到最右时 content = 列宽 - 96（原来只能到 列宽 - 176，多出 80px）
- *     拖到中间时 content = 偏好 + 80，拖动依然逐级生效
- *   没设过偏好时 fallback 取 DSH 自己的 (列宽 - 176)，+80 后同样是 列宽 - 96，
- *   两条路径自洽。
+ * ★ 那 176px 是 JS 常量，纯 CSS 改不了 —— 所以绕开它：把 JS 夹过的值**加回
+ *   差值**（176 − 96 = 80px），再用「列宽 − 96px」兜住上限。没设过偏好时
+ *   fallback 取 DSH 自己的 (列宽 − 176)，+80 后同样是 列宽 − 96，两条路径自洽。
+ *
+ * ★★ 这个变量必须写在**拥有它的元素**上，不能写在列上。
+ *   `--dsh-chat-content-width` 共有 9 个消费方，实测（全部来自源码）：
+ *     .tnXGgG_column              max-width: var(--dsh-chat-content-width)
+ *     .kiGsTW_widthHandle         right/left: calc(50% + var(...)/2 + 24px)
+ *                                 width: min(10px, calc((100% - var(...)) / 2 - 48px))
+ *     .kiGsTW_body                --dsh-composer-card-max-width: calc(var(...) + 32px)
+ *     markdown 表格               --dsh-table-spare / --dsh-table-lead
+ *     另一处                     max-width: min(calc(var(--dsh-chat-content-width,748px) * .702), 82%)
+ *   写在列上只有列会变宽，拖动手柄仍按旧宽度定位 → **手柄陷进内容里**；
+ *   输入框的 max-width 也仍按旧值算 → **不跟着变宽**。用户两个反馈都是这个原因。
+ *
+ *   目标元素是 `.kiGsTW_body`（`ConversationRoot_module_css_default.body`），
+ *   它自己没有语义属性，但有稳定特征：**包含** `[data-conversation-scroll]`。
+ *   用 `:has()` 精确定位它，特异度 (0,2,2) 高于 DSH 的 (0,1,0)。
  *
  * 想再调就改 --ocui-chat-edge-budget 一个数（两侧合计留白）：
  *   96 = 每侧 48px（当前）· 64 = 每侧 32px 更满 · 176 = 还原 DSH 原样。 */
-html body [data-conversation-scroll] :is([class$="_column"], [class*="_column "]) {
+html body :is([class$="_body"], [class*="_body "]):has([data-conversation-scroll]) {
   --ocui-chat-edge-budget: 96px;
   --dsh-chat-content-width: min(
     calc(var(--dsh-conversation-column-width, 100%) - var(--ocui-chat-edge-budget)),
