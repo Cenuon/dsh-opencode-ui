@@ -87,12 +87,12 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "])::after {
   content: "";
   position: absolute;
-  top: 14px;
-  bottom: 14px;
+  top: 16%;
+  bottom: 16%;
   right: 0;
-  width: 1px;
+  width: 2px;
   background: var(--dsw-alias-border-l2);
-  border-radius: 999px;
+  border-radius: 1px;
   pointer-events: none;
 }
 
