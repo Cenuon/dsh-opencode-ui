@@ -1696,3 +1696,18 @@ html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markd
   font-family: inherit;
   font-feature-settings: inherit;
 }
+
+/* H4 · 正文内所有行内元素强制 1em，压平任何残留的字号差异。
+ *
+ * 已完成的三个修复：
+ *   H1 行内代码 .875em -> 1em（DSH 用 !important，必须同级对抗）
+ *   H2 加粗 600 -> 500（避免系统字体无 600 时合成加粗）
+ *   H3 行内代码字体族 -> inherit（等宽字体 x-height 小，同字号看着小一圈）
+ * 本条是兜底：正文内所有行内元素一律 1em，任何来源的放大都被压平。
+ *
+ * :not(:is(th, td) *) 排除表格单元格 —— 表格走 13px 独立字阶，
+ * 不能被拉回 14px，否则表格行高会再次被撑开。
+ */
+html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :is(p, li, strong, b, em, i, span, a):not(:is(th, td) *) {
+  font-size: 1em !important;
+}
