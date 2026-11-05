@@ -202,7 +202,7 @@ html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]
  *   triggerRow margin 4/-2   → 0           → 去掉外侧 4px
  *   _root      底边距 8px    → 4px         → 总高 52 → 40 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_trigger"], [class*="_trigger "]) {
-  padding: 2px 6px;
+  padding: 4px 6px;
 }
 
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_triggerRow"], [class*="_triggerRow "]) {
@@ -221,7 +221,7 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
  * （截图缩放 2.07：行距 84 img px ÷ 2.07 ≈ 40.5）。上面导航行是 26px，
  * 两者差了一档，所以项目列表看着更松。收到 26px 对齐。 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_projectRow"], [class*="_projectRow "]) {
-  height: 26px;
+  height: 30px;
 }
 
 /* B11 · 面板列表：区块间距与行间距。
@@ -231,22 +231,22 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
  *   （插件/自动化任务/更多、工作区、…）之间被拉得很开，用户反馈「都紧凑一点」。
  *   改回比原生更紧一档：gap 1px、区块间距 6px。 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_panelList"], [class*="_panelList "]) {
-  gap: 1px;
-  margin-bottom: 6px;
+  gap: 3px;
+  margin-bottom: 10px;
 }
 
 /* B12 · 面板行：直接对齐 opencode 左导航项实测值
    （height:28px; gap:8px; border-radius:6px; padding:0 6px; 13px/440）。
    排除折叠态（折叠态是 36×36 居中图标）。 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]) {
-  min-height: 26px;
+  min-height: 30px;
   border-radius: var(--dsw-radius-md);
   gap: 6px;
   margin: 0;
   padding: 0 6px;
   font-size: calc(13px + var(--dsh-content-font-delta, 0px));
   font-weight: 400;
-  line-height: 18px;
+  line-height: 20px;
   letter-spacing: -0.04px;
   transition: background-color 85ms ease-out, color 85ms ease-out;
 }
