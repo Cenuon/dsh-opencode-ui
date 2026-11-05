@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-  id: "dsh-opencode-ui",
+  id: "@local/opencode-ui",
   factory(require) {
     const React = require('react');
     const h = React.createElement;
