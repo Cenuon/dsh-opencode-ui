@@ -755,30 +755,32 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
   background: var(--dsw-alias-bg-base);
 }
 
-/* 表头：32px 行高、灰色文字、530 字重、左对齐、无底色 */
+/* 表头：32px 行高、灰色文字、500 字重、左对齐、无底色。字重与正文行同档。 */
 html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) th {
   height: 32px;
   background: transparent;
   color: var(--dsw-alias-label-tertiary);
-  font-size: calc(14px + var(--dsh-content-font-delta, 0px));
-  font-weight: 530;
+  font-size: calc(13px + var(--dsh-content-font-delta-secondary, 0px));
+  font-weight: 500;
   line-height: 1;
   letter-spacing: -0.04px;
   border-bottom: none;
 }
 
-/* 数据行：行高 36px、次级文字色、440 字重。
+/* 数据行：行高与表头一致（32px）、次级文字色、正常字重 400。
  *
- * ★ 行高不是照抄 console 的 h-12(48px)。用户两次反馈「行高太高」，而他自己
- *   认可的参考表（菜单项/实际动作那张）实测行高是 73 img px ÷ 2.0 = 36.5px。
- *   所以取 36px —— 以用户认可的参考为准，而不是以 console 的默认值为准。
- *   想再调就改这一个数：36 → 32 更紧、40 更松。 */
+ * ★ 用户反馈「表格和表头高度保持一致，另外表格字体不要加粗放大，使用正常字体」。
+ *   原来是 height:36px / font-size:14px / font-weight:440，三个问题：
+ *     - 36 vs 表头 32         -> 高度不一致
+ *     - 14px vs 表格原生 13px -> 放大了
+ *     - 440 vs 正文 400       -> 看起来加粗
+ *   现在统一为 32px / 13px / 400，与表头对齐。 */
 html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) td {
-  height: 36px;
+  height: 32px;
   color: var(--dsw-alias-label-secondary);
-  font-size: calc(14px + var(--dsh-content-font-delta, 0px));
-  font-weight: 440;
-  line-height: calc(20px + var(--dsh-content-font-delta, 0px));
+  font-size: calc(13px + var(--dsh-content-font-delta-secondary, 0px));
+  font-weight: 400;
+  line-height: calc(18px + var(--dsh-content-font-delta-secondary, 0px));
   letter-spacing: -0.04px;
   border-bottom: none;
 }
