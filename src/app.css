@@ -1684,3 +1684,15 @@ html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markd
 html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :is(h1, h2, h3, h4, h5, h6) :is(strong, b) {
   font-weight: inherit;
 }
+
+/* H3 · 行内代码跟随正文字体族，消除「同字号但看着小一圈」。
+ *
+ * DevTools 实测：正文 font-family = -apple-system，行内代码 = "SF Mono"。
+ * 等宽字体的 x-height 比系统 UI 字体小很多，同样 14px 视觉上会小一圈，
+ * 这正是「字一会大一会小」的最后一个来源。
+ * 字号已经用 H1 统一为 1em；这里再把字体族改为继承，只保留胶囊底色和边框
+ * 作为「这是代码」的视觉标记。 */
+html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :not(pre) > code {
+  font-family: inherit;
+  font-feature-settings: inherit;
+}
