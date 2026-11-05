@@ -1,7 +1,7 @@
 {
-  "name": "dsh-opencode-ui",
+  "name": "@local/opencode-ui",
   "version": "1.0.0",
-  "private": false,
+  "private": true,
   "type": "module",
   "description": "opencode console visual language for the DSH Web UI — settings page and main interface.",
   "exports": {
