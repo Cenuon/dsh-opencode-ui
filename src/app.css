@@ -760,9 +760,11 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
   height: 32px;
   background: transparent;
   color: var(--dsw-alias-label-tertiary);
-  font-size: calc(13px + var(--dsh-content-font-delta-secondary, 0px));
-  font-weight: 500;
-  line-height: 1;
+  /* ★ 必须用 font 简写 + !important。DSH 有
+   *     ._tableScroll_ td { font: var(--dsw-font-markdown-table) }
+   *   一条简写会同时重置字号/字重/行高；分别写长属性会被它盖掉，
+   *   这就是前三版都没生效的原因。 */
+  font: 500 calc(13px + var(--dsh-content-font-delta-secondary, 0px)) / 18px var(--dsw-font-family) !important;
   letter-spacing: -0.04px;
   border-bottom: none;
 }
@@ -778,9 +780,7 @@ html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tab
 html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) td {
   height: 32px;
   color: var(--dsw-alias-label-secondary);
-  font-size: calc(13px + var(--dsh-content-font-delta-secondary, 0px));
-  font-weight: 400;
-  line-height: calc(18px + var(--dsh-content-font-delta-secondary, 0px));
+  font: 400 calc(13px + var(--dsh-content-font-delta-secondary, 0px)) / 18px var(--dsw-font-family) !important;
   letter-spacing: -0.04px;
   border-bottom: none;
 }
