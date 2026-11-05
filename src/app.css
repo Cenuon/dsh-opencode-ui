@@ -72,7 +72,32 @@ html[data-platform="darwin"] body :is([class$="_frame"], [class*="_frame "]):has
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) {
   background: var(--dsw-specific-sidebar-fill);
   background-image: none;
-  border-right: 0.5px solid var(--dsw-alias-border-l2);
+  border-right: none;
+  position: relative;
+}
+
+/* A6b · 侧栏分割线改成伪元素，使两端呈圆弧。
+ *
+ * 用户参考 opencode 偏好设置窗口，要求「分割线两头是圆弧」。
+ * 边框（border-right）无法做端点圆角，所以：
+ *   1. 去掉 border-right
+ *   2. 用 ::after 画一条 1px 竖线，上下各内缩 14px —— 端点因此可见
+ *   3. border-radius: 999px 把两端收成半圆
+ * 折叠态由下面的规则把伪元素关掉，避免在 0 宽列上留线。 */
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "])::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  right: 0;
+  width: 1px;
+  background: var(--dsw-alias-border-l2);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+html body :is([class$="_frame"], [class*="_frame "])[data-sidebar-collapsed] > :is([class$="_sidebarCol"], [class*="_sidebarCol "])::after {
+  content: none;
 }
 
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_centerCol"], [class*="_centerCol "]) {
@@ -95,7 +120,7 @@ html[data-platform="darwin"] body :is([class$="_frame"], [class*="_frame "]):has
 html[data-platform="darwin"] body[data-ds-dark-theme] :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) {
   background: var(--dsw-specific-sidebar-fill);
   background-image: none;
-  border-right: 0.5px solid var(--dsw-alias-border-l2);
+  border-right: none;
 }
 
 /* A9 · 右栏基准面 */
