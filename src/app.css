@@ -1637,3 +1637,34 @@ html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :
   color: var(--dsw-alias-label-secondary);
 }
 
+
+/* ==========================================================================
+   H. 对话区文字一致性
+   ========================================================================== */
+
+/* H1 · 行内代码与正文同字号、走基线。
+ *
+ * DSH 原本：
+ *   ._markdown_1ypvv_5 :not(pre) > code {
+ *     font-size: .875em !important;   → 正文 14px 时只有 12.25px
+ *     display: inline-flex;
+ *     align-items: center;            → 不按基线对齐，整行节奏被打乱
+ *     padding: 0 5px; border: .5px solid;
+ *   }
+ * 于是同一段话里出现两种字号，用户反复反馈「保持所有文字大小一致」
+ * 「字一会大一会小」「排版不干净」。
+ *
+ * 这里用 1em !important 压过它（对方也用了 !important，必须同级对抗），
+ * 并把 display 改回 inline —— 胶囊底色和圆角都保留，但恢复基线对齐。
+ * 行高用 inherit，避免撑高行距。 */
+html body [data-conversation-scroll] :is([class*="_markdown_"], [class*="_markdown "]) :not(pre) > code {
+  display: inline;
+  font-size: 1em !important;
+  line-height: inherit !important;
+  vertical-align: baseline;
+}
+
+/* 行内代码内部的 span/strong 也统一，避免出现第二级字号 */
+html body [data-conversation-scroll] :is([class*="_markdown_"], [class*="_markdown "]) :not(pre) > code * {
+  font-size: 1em !important;
+}
