@@ -1668,3 +1668,19 @@ html body [data-conversation-scroll] :is([class*="_markdown_"], [class*="_markdo
 html body [data-conversation-scroll] :is([class*="_markdown_"], [class*="_markdown "]) :not(pre) > code * {
   font-size: 1em !important;
 }
+
+/* H2 · 加粗降到 500，避免合成加粗把字「撑大」。
+ *
+ * DSH 的 ._markdown strong { font-weight: 600 }。系统字体栈里通常没有 600 这档，
+ * 浏览器会做合成加粗（把笔画描粗），视觉上比周围文字明显大一圈 ——
+ * 这就是用户说的「字一会大一会小」的另一半原因。
+ * 500 是系统字体真实存在的字重，不做合成，加粗仍然可辨但不会「变胖变大」。
+ * opencode 自身用的是 530 那档（Inter 可变字体），本机没有 Inter 时 500 最接近。 */
+html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :is(strong, b) {
+  font-weight: 500;
+}
+
+/* 标题内部若再有 strong，跟随标题字重，避免两级加粗叠加 */
+html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :is(h1, h2, h3, h4, h5, h6) :is(strong, b) {
+  font-weight: inherit;
+}
