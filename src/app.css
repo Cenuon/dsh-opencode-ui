@@ -1633,6 +1633,29 @@ html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :
   color: var(--dsw-alias-label-secondary);
 }
 
+/* G11b · 选项行外层：让高度由内部按钮决定，消除底部留白。
+ *
+ * 当前 DSH 版把选项拆成了两层：
+ *   _optionRow  min-height:40px; border:.5px solid transparent;
+ *               transition:background-color  → **hover/选中背景画在这一层**
+ *   _option     min-height:40px; align-items:flex-start; padding-bottom:32px
+ *               → 内层按钮，实测高 32px
+ * 内层是块级元素，外层 40 - 32 = 8px 全部堆在底部，于是背景色下方空一块
+ * （用户反馈「下面明显留白多一些」）。
+ *
+ * 处理：外层改成 flex + 垂直居中，并去掉 min-height，让高度完全跟随按钮。
+ * 作用域仍用 :has([data-question-scroll]) 锁定提问弹窗。 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_optionRow"], [class*="_optionRow "]) {
+  display: flex;
+  align-items: center;
+  min-height: 0;
+}
+
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_optionRow"], [class*="_optionRow "]) > :is([class$="_option"], [class*="_option "]) {
+  flex: 1;
+  min-height: 0;
+}
+
 /* G12 · （已撤销）曾给选项描述加 flex: 0 0 100% 强制换行。
  *
  * DevTools 实测暴露了副作用：窄宽度下这个 100% basis 把同一行里的
