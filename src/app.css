@@ -1559,10 +1559,16 @@ html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :
   padding: 2px 10px;
 }
 
-/* G5 · 选项行 / 自定义答案行：min-height 40 → 30，padding 8 → 4，gap 8 → 6 */
+/* G5 · 选项行 / 自定义答案行：min-height 40 → 30，padding 8 → 4，gap 8 → 6。
+ *
+ * ★ align-items 必须是 center。DSH 原生是 flex-start（顶部对齐），
+ *   配合 min-height 时，内容比最小高度矮，多出来的空间全部堆在**底部**，
+ *   于是选中/悬停态的背景色下面空一块（用户反馈「序号和文字没有在行中显示，
+ *   背景色下半部分留白多一些」）。center 让剩余空间上下均分。 */
 html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_option"], [class*="_option "]),
 html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_customRow"], [class*="_customRow "]) {
   min-height: 30px;
+  align-items: center;
   gap: 6px;
   padding: 4px 8px 4px 6px;
 }
