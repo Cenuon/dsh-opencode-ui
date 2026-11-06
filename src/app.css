@@ -1570,7 +1570,9 @@ html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :
 html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_option"], [class*="_option "]),
 html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_customRow"], [class*="_customRow "]) {
   min-height: 32px;
-  align-items: center;
+  /* ★ 顶部对齐：多行选项时序号必须贴标题（首行），不能整体垂直居中，
+     否则序号会落在标题与描述之间（用户反馈「多行时序号要和标题在一个水平」）。 */
+  align-items: flex-start;
   gap: 6px;
   padding: 5px 10px 5px 6px;
 }
@@ -1630,7 +1632,8 @@ html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :
   width: 24px;
   height: 24px;
   flex: 0 0 24px;
-  margin-top: 0;
+  /* 徽标 24px、首行行高 20px → 上移 2px 才能与首行文字视觉居中 */
+  margin-top: -2px;
   background: var(--dsw-alias-interactive-bg-hover);
   color: var(--dsw-alias-label-secondary);
 }
