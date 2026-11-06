@@ -1633,12 +1633,14 @@ html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :
   color: var(--dsw-alias-label-secondary);
 }
 
-/* G12 · 选项两行：描述换成独占一行。
- * DSH 的 _optionLine 是 flex-wrap 容器，标签和描述都是 inline 子项；
- * 给描述 flex-basis:100% 就把它挤到下一行，且仍与标签左对齐（参照图就是这样）。 */
-html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_optionLine"], [class*="_optionLine "]) :is([class$="_description"], [class*="_description "]) {
-  flex: 0 0 100%;
-}
+/* G12 · （已撤销）曾给选项描述加 flex: 0 0 100% 强制换行。
+ *
+ * DevTools 实测暴露了副作用：窄宽度下这个 100% basis 把同一行里的
+ * _optionLabel 挤窄，标题从 1 行折成 3 行（h=60，line-height 只有 20px），
+ * 整行高度翻倍到 88px —— 用户看到的「背景色下半留白多」正是这么来的。
+ *
+ * 现在让描述沿用 DSH 原生的自然换行（flex-wrap: wrap + baseline），
+ * 宽度够就同行，不够才换行，不会再挤压标题。 */
 
 /* G13 · 提交按钮：蓝色 → 深色反底。
  * 用 label-primary 作底色、bg-base 作文字色，即「反色」——
