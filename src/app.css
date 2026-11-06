@@ -1524,15 +1524,27 @@ html body [class*="_denseList"] [class*=" _item_"] {
  *
  * 实测基准（截图，缩放 ≈2.44）：选项行间距 100 img px、底部按钮高 71 img px。 */
 
-/* G1 · 卡片底部内边距 10 → 8 */
+/* G1 · 卡片外观 + 内边距。
+ *
+ * 用户要求「加点边框阴影」——DSH 原有的 --dsw-elevation-panel 在全屏浅底上几乎
+ * 看不出来，这里显式补一条发丝边框 + 双层柔和阴影，让卡片从内容区浮起来。 */
 html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) {
   padding-bottom: 8px;
+  border: 1px solid var(--dsw-alias-border-l2) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
 }
 
-/* G2 · 头部：padding 20/16/24 → 12/14/18，gap 16 → 12 */
+/* G2 · 头部：顶部留白 12 → 4（用户反馈「顶部留白太多」），左右 14/18，gap 12 */
 html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_header"], [class*="_header "]) {
   gap: 12px;
-  padding: 12px 14px 0 18px;
+  padding: 4px 14px 0 18px;
+}
+
+/* G2b · 空的 eyebrow 必须收起。
+ * DSH 的 .ggehTG_eyebrow 是 11px/16px + margin-bottom:5px，即使没有文字也占
+ * 21px —— 这是「顶部留白太多」的另一半来源。 */
+html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_eyebrow"], [class*="_eyebrow "]):empty {
+  display: none;
 }
 
 /* G3 · 标题 16px/22 → 14px/20（截图里它明显比选项文字大） */
@@ -1590,9 +1602,10 @@ html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :
  * 实测按钮高 71 img px ÷ 2.44 ≈ 29 CSS px（DSH 的 _sm 档是 28px）。
  * 收到 24px，左右内边距 10 → 8。 */
 html body :is([class$="_card"], [class*="_card "]):has([data-question-scroll]) :is([class$="_footerActions"], [class*="_footerActions "]) :is([class^="_button_"], [class*=" _button_"]) {
-  height: 24px;
-  padding: 0 8px;
-  font-size: 12px;
+  /* 用户反馈「按钮稍微大一点点」：24 → 28，内边距 8 → 12，字号 12 → 13 */
+  height: 28px;
+  padding: 0 12px;
+  font-size: 13px;
 }
 
 /* ---- G11~G14：按用户给的参照图调整外观 ----
@@ -1693,8 +1706,6 @@ html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markd
  * 字号已经用 H1 统一为 1em；这里再把字体族改为继承，只保留胶囊底色和边框
  * 作为「这是代码」的视觉标记。 */
 html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :not(pre) > code {
-  font-family: inherit;
-  font-feature-settings: inherit;
 }
 
 /* H4 · 正文内所有行内元素强制 1em，压平任何残留的字号差异。
