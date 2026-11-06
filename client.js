@@ -59,24 +59,24 @@ window.__ModuleLoader__.load({
         "dark": "#3c3c3c"
       },
       "--dsw-alias-brand-primary": {
-        "light": "#3b5cf6",
-        "dark": "#a2bcff"
+        "light": "#4176e6",
+        "dark": "#7aaaff"
       },
       "--dsw-alias-button-primary-fill": {
-        "light": "#3b5cf6",
-        "dark": "#a2bcff"
+        "light": "#4176e6",
+        "dark": "#7aaaff"
       },
       "--dsw-alias-button-primary-hover": {
-        "light": "#3250df",
-        "dark": "#c3d4fd"
+        "light": "#3563c4",
+        "dark": "#9cc0ff"
       },
       "--dsw-alias-link": {
         "light": "#3b5cf6",
         "dark": "#a2bcff"
       },
       "--dsw-alias-state-business-primary": {
-        "light": "#3b5cf6",
-        "dark": "#a2bcff"
+        "light": "#4176e6",
+        "dark": "#7aaaff"
       },
       "--dsw-alias-state-error-primary": {
         "light": "#b82d35",
