@@ -1722,3 +1722,24 @@ html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markd
 html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :is(p, li, strong, b, em, i, span, a):not(:is(th, td) *) {
   font-size: 1em !important;
 }
+
+/* H5 · 「＋ 新建」分体按钮：强制回 DSH 原生的 6px 圆角。
+ *
+ * plugin-manager 的 addGroup 是一个两段式按钮：
+ *   .w6M7KW_addButton / addPrimary / addMore { border-radius: var(--dsw-radius-md) }
+ *   .w6M7KW_addPrimary { border-top-right-radius:0; border-bottom-right-radius:0 }
+ *   .w6M7KW_addMore    { border-top-left-radius:0;  border-bottom-left-radius:0 }
+ * 即左右两段拼成一个圆角矩形，不是胶囊。用户反馈当前是「子弹头」形状，
+ * 这里显式钉死为 --dsw-radius-md（6px），并保留中间拼缝的直角。 */
+html body :is([class$="_addPrimary"], [class*="_addPrimary "]),
+html body :is([class$="_addButton"], [class*="_addButton "]) {
+  border-radius: var(--dsw-radius-md) !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+html body :is([class$="_addMore"], [class*="_addMore "]) {
+  border-radius: var(--dsw-radius-md) !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
