@@ -1851,3 +1851,28 @@ html body [data-composer-card] {
   border-radius: var(--dsw-radius-lg) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
 }
+
+/* I4 · 按钮改胶囊形（Hearth 的主/次按钮都是全圆胶囊）。
+ *
+ * 用 web-frontend 原语约定 `_button_<hash>` 定位（class^ / " _button_"），
+ * 图标按钮用的是另一个类（_iconButton），不受影响。
+ * 分体按钮（自动化任务的 createGroup）两段各自只圆外侧，保持拼缝直角。 */
+html body :is([class^="_button_"], [class*=" _button_"]) {
+  border-radius: 999px !important;
+}
+
+html body :is([class$="_createGroup"], [class*="_createGroup "]) > *:first-child {
+  border-radius: 999px 0 0 999px !important;
+}
+
+html body :is([class$="_createGroup"], [class*="_createGroup "]) > *:last-child {
+  border-radius: 0 999px 999px 0 !important;
+}
+
+html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addPrimary"], [class*="_addPrimary "]) {
+  border-radius: 999px 0 0 999px !important;
+}
+
+html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addMore"], [class*="_addMore "]) {
+  border-radius: 0 999px 999px 0 !important;
+}
