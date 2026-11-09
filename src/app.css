@@ -1818,3 +1818,36 @@ html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addPrim
 html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addMore"], [class*="_addMore "]) {
   border-radius: 0 6px 6px 0 !important;
 }
+
+/* ==========================================================================
+   I. Hearth 视觉语言：卡片与浮层
+   ========================================================================== */
+
+/* I1 · 浮层（菜单 / 对话框 / 列表）：大圆角 + 柔和投影。
+ *
+ * 用 ARIA role 定位而不是类名 —— `_dialog` 命中 8 个模块、`_card` 命中 16 个，
+ * 裸用后缀会误伤；而 role="dialog"/"menu"/"listbox" 是语义契约，稳定且精确。
+ * 参考图里浮层是 16px 圆角 + 大范围柔和阴影。 */
+html body :is([role="dialog"], [role="menu"], [role="listbox"], [role="alertdialog"]) {
+  border-radius: var(--dsw-radius-xl) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* I2 · 对话区的「卡片」类表面：代码块、表格、交付卡。
+ * 参考图的卡片是 12px 圆角 + 近白面 + 极轻投影。 */
+html body [data-conversation-scroll] :is(.md-code-block, [data-changed-files]) {
+  border-radius: var(--dsw-radius-lg) !important;
+  border: 1px solid var(--dsw-alias-border-l1) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  overflow: hidden;
+}
+
+html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) {
+  border-radius: var(--dsw-radius-lg) !important;
+}
+
+/* I3 · 输入卡片：12px 圆角 + 轻投影（参考图的输入框是一块浮起的面板） */
+html body [data-composer-card] {
+  border-radius: var(--dsw-radius-lg) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
