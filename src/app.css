@@ -1772,16 +1772,28 @@ html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markd
  *   · 插件页 toolbar 有 gap: 16px，把两段按钮撑开成两个独立圆角块。
  */
 
-/* —— 自动化任务页 —— */
-html body :is([class$="_creationActions"], [class*="_creationActions "]) :is([class$="_headerAction"], [class*="_headerAction "]) {
-  border-radius: 6px !important;
+/* —— 自动化任务页 ——
+ *
+ * 不再依赖按钮自身的类名：放大截图确认 createPrimary / createMore 并没有
+ * 作用在那两个按钮上（两段仍是四角全圆的独立块，中间还有缝）。
+ * 改为用容器 createGroup（全 asar 唯一，CDG4uW）加 :first-child / :last-child
+ * 定位，与按钮内部用什么类名无关。
+ *   CDG4uW_createGroup { display:inline-flex; align-items:stretch }  ← 无 gap
+ */
+html body :is([class$="_createGroup"], [class*="_createGroup "]) {
+  gap: 0 !important;
 }
 
-html body :is([class$="_createPrimary"], [class*="_createPrimary "]) {
+html body :is([class$="_createGroup"], [class*="_createGroup "]) > * {
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+html body :is([class$="_createGroup"], [class*="_createGroup "]) > *:first-child {
   border-radius: 6px 0 0 6px !important;
 }
 
-html body :is([class$="_createMore"], [class*="_createMore "]) {
+html body :is([class$="_createGroup"], [class*="_createGroup "]) > *:last-child {
   border-radius: 0 6px 6px 0 !important;
 }
 
