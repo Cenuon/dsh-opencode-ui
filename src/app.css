@@ -204,7 +204,7 @@ html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]
  *   triggerRow margin 4/-2   → 0           → 去掉外侧 4px
  *   _root      底边距 8px    → 4px         → 总高 52 → 40 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_trigger"], [class*="_trigger "]) {
-  padding: 6px 10px;
+  padding: 4px 6px;
 }
 
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_triggerRow"], [class*="_triggerRow "]) {
@@ -223,7 +223,7 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
  * （截图缩放 2.07：行距 84 img px ÷ 2.07 ≈ 40.5）。上面导航行是 26px，
  * 两者差了一档，所以项目列表看着更松。收到 26px 对齐。 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_projectRow"], [class*="_projectRow "]) {
-  height: 34px;
+  height: 30px;
 }
 
 /* B11 · 面板列表：区块间距与行间距。
@@ -233,16 +233,16 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
  *   （插件/自动化任务/更多、工作区、…）之间被拉得很开，用户反馈「都紧凑一点」。
  *   改回比原生更紧一档：gap 1px、区块间距 6px。 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_panelList"], [class*="_panelList "]) {
-  gap: 2px;
-  margin-bottom: 18px;
+  gap: 3px;
+  margin-bottom: 10px;
 }
 
 /* B12 · 面板行：直接对齐 opencode 左导航项实测值
    （height:28px; gap:8px; border-radius:6px; padding:0 6px; 13px/440）。
    排除折叠态（折叠态是 36×36 居中图标）。 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]) {
-  min-height: 34px;
-  border-radius: 999px;
+  min-height: 30px;
+  border-radius: var(--dsw-radius-md);
   gap: 6px;
   margin: 0;
   padding: 0 6px;
@@ -261,16 +261,8 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
 }
 
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]):is([class$="_panelActive"], [class*="_panelActive "]) {
-  /* Hearth：激活项是黑色胶囊 + 白字（参考图实测 #0c0c0c） */
-  background: var(--dsw-alias-button-primary-fill);
-  color: var(--dsw-alias-label-primary-foreground);
-  border-radius: 999px;
-}
-
-/* 激活项内的文字与 SVG 一并转白 */
-html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_panelRow"], [class*="_panelRow "]):is([class$="_panelActive"], [class*="_panelActive "]) :is(svg, :is([class$="_panelTitle"], [class*="_panelTitle "]), [class*="_panelTitle "]) {
-  color: inherit;
-  fill: currentColor;
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
 }
 
 /* B15 + B16 · 图标按钮（_iconButton 有 4 个模块，必须限定在 sidebarCol 内）。
@@ -1817,114 +1809,4 @@ html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addPrim
 
 html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addMore"], [class*="_addMore "]) {
   border-radius: 0 6px 6px 0 !important;
-}
-
-/* ==========================================================================
-   I. Hearth 视觉语言：卡片与浮层
-   ========================================================================== */
-
-/* I1 · 浮层（菜单 / 对话框 / 列表）：大圆角 + 柔和投影。
- *
- * 用 ARIA role 定位而不是类名 —— `_dialog` 命中 8 个模块、`_card` 命中 16 个，
- * 裸用后缀会误伤；而 role="dialog"/"menu"/"listbox" 是语义契约，稳定且精确。
- * 参考图里浮层是 16px 圆角 + 大范围柔和阴影。 */
-html body :is([role="dialog"], [role="menu"], [role="listbox"], [role="alertdialog"]) {
-  border-radius: var(--dsw-radius-xl) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06) !important;
-}
-
-/* I2 · 对话区的「卡片」类表面：代码块、表格、交付卡。
- * 参考图的卡片是 12px 圆角 + 近白面 + 极轻投影。 */
-html body [data-conversation-scroll] :is(.md-code-block, [data-changed-files]) {
-  border-radius: var(--dsw-radius-lg) !important;
-  border: 1px solid var(--dsw-alias-border-l1) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
-  overflow: hidden;
-}
-
-html body [data-conversation-scroll] :is([class*="_tableScroll_"], [class*="_tableFill_"]) {
-  border-radius: var(--dsw-radius-lg) !important;
-}
-
-/* I3 · 输入卡片：12px 圆角 + 轻投影（参考图的输入框是一块浮起的面板） */
-html body [data-composer-card] {
-  border-radius: var(--dsw-radius-lg) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
-}
-
-/* I4 · 按钮改胶囊形（Hearth 的主/次按钮都是全圆胶囊）。
- *
- * 用 web-frontend 原语约定 `_button_<hash>` 定位（class^ / " _button_"），
- * 图标按钮用的是另一个类（_iconButton），不受影响。
- * 分体按钮（自动化任务的 createGroup）两段各自只圆外侧，保持拼缝直角。 */
-html body :is([class^="_button_"], [class*=" _button_"]) {
-  border-radius: 999px !important;
-}
-
-html body :is([class$="_createGroup"], [class*="_createGroup "]) > *:first-child {
-  border-radius: 999px 0 0 999px !important;
-}
-
-html body :is([class$="_createGroup"], [class*="_createGroup "]) > *:last-child {
-  border-radius: 0 999px 999px 0 !important;
-}
-
-html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addPrimary"], [class*="_addPrimary "]) {
-  border-radius: 999px 0 0 999px !important;
-}
-
-html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addMore"], [class*="_addMore "]) {
-  border-radius: 0 999px 999px 0 !important;
-}
-
-/* I5 · 对话区表面与排版（Hearth 风格：近白卡片、大圆角、宽松留白）。
- * 全部限定在 [data-conversation-scroll] 内，避免波及设置页与浮层。 */
-html body [data-conversation-scroll] :is([class$="_bubble"], [class*="_bubble "]) {
-  border-radius: var(--dsw-radius-xl) !important;
-}
-
-/* 代码块：近白面 + 12px 圆角已在 I2 处理，这里补内部留白与色 */
-html body [data-conversation-scroll] .md-code-block {
-  background: var(--dsw-alias-bg-layer-1) !important;
-}
-
-/* 行内代码：小圆角胶囊感 */
-html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :not(pre) > code {
-  border-radius: 6px !important;
-  background: var(--dsw-alias-bg-layer-2) !important;
-}
-
-/* 段落与列表的垂直节奏：Hearth 比 opencode 更宽松 */
-html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :is(p, ul, ol, blockquote) {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :is(h1, h2, h3, h4, h5, h6) {
-  margin-top: 18px;
-  margin-bottom: 8px;
-}
-
-/* I6 · 输入卡片按 Hearth 调整：更大圆角、更舒展的内边距、近黑发送按钮。 */
-html body [data-composer-card] {
-  border-radius: var(--dsw-radius-xl) !important;
-  border: 1px solid var(--dsw-alias-border-l1) !important;
-  background: var(--dsw-alias-bg-base) !important;
-}
-
-/* 输入区上下留白稍放大（Hearth 的输入框内部很舒展） */
-html body [data-composer-input] {
-  padding-top: 8px !important;
-  padding-bottom: 6px !important;
-}
-
-/* 发送按钮：近黑圆形（Hearth 的 ↑ 是黑底白箭头） */
-html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_primary"], [class*="_primary "]) {
-  border-radius: 999px !important;
-  background: var(--dsw-alias-button-primary-fill) !important;
-  color: var(--dsw-alias-label-primary-foreground) !important;
-}
-
-html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_primary"], [class*="_primary "]):hover:not(:disabled) {
-  background: var(--dsw-alias-button-primary-hover) !important;
 }
