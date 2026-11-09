@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" role="img" aria-label="opencode ui">
-  <rect x="1.25" y="2.25" width="13.5" height="11.5" rx="2.6" fill="none" stroke="#8a8f98" stroke-width="1.4"/>
-  <path d="M1.25 5.6h13.5" stroke="#8a8f98" stroke-width="1.4" stroke-linecap="round"/>
-  <path d="M4.7 8.5l1.9 1.9-1.9 1.9" fill="none" stroke="#3b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M8.6 12.3h3" stroke="#8a8f98" stroke-width="1.4" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="opencode">
+  <!-- opencode 官方 favicon 的矢量重绘（实测几何，96×96 基准，直角无圆角） -->
+  <rect width="96" height="96" fill="#131010"/>
+  <rect x="24" y="18" width="48" height="60" fill="#ffffff"/>
+  <rect x="36" y="30" width="24" height="12" fill="#131010"/>
+  <rect x="36" y="42" width="24" height="24" fill="#5a5858"/>
 </svg>

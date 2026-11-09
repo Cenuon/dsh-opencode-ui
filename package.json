@@ -4,11 +4,13 @@
   "private": true,
   "type": "module",
   "description": "opencode console visual language for the DSH Web UI — settings page and main interface.",
+  "icon": "./icon.svg",
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
     "./locale/*.json": "./locale/*.json",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./icon": "./icon.svg"
   },
   "files": [
     "index.js",
