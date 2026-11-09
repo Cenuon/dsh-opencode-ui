@@ -1904,3 +1904,27 @@ html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markd
   margin-top: 18px;
   margin-bottom: 8px;
 }
+
+/* I6 · 输入卡片按 Hearth 调整：更大圆角、更舒展的内边距、近黑发送按钮。 */
+html body [data-composer-card] {
+  border-radius: var(--dsw-radius-xl) !important;
+  border: 1px solid var(--dsw-alias-border-l1) !important;
+  background: var(--dsw-alias-bg-base) !important;
+}
+
+/* 输入区上下留白稍放大（Hearth 的输入框内部很舒展） */
+html body [data-composer-input] {
+  padding-top: 8px !important;
+  padding-bottom: 6px !important;
+}
+
+/* 发送按钮：近黑圆形（Hearth 的 ↑ 是黑底白箭头） */
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_primary"], [class*="_primary "]) {
+  border-radius: 999px !important;
+  background: var(--dsw-alias-button-primary-fill) !important;
+  color: var(--dsw-alias-label-primary-foreground) !important;
+}
+
+html body :is([class$="_composerSeat"], [class*="_composerSeat "]) :is([class$="_primary"], [class*="_primary "]):hover:not(:disabled) {
+  background: var(--dsw-alias-button-primary-hover) !important;
+}
