@@ -1876,3 +1876,31 @@ html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addPrim
 html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addMore"], [class*="_addMore "]) {
   border-radius: 0 999px 999px 0 !important;
 }
+
+/* I5 · 对话区表面与排版（Hearth 风格：近白卡片、大圆角、宽松留白）。
+ * 全部限定在 [data-conversation-scroll] 内，避免波及设置页与浮层。 */
+html body [data-conversation-scroll] :is([class$="_bubble"], [class*="_bubble "]) {
+  border-radius: var(--dsw-radius-xl) !important;
+}
+
+/* 代码块：近白面 + 12px 圆角已在 I2 处理，这里补内部留白与色 */
+html body [data-conversation-scroll] .md-code-block {
+  background: var(--dsw-alias-bg-layer-1) !important;
+}
+
+/* 行内代码：小圆角胶囊感 */
+html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :not(pre) > code {
+  border-radius: 6px !important;
+  background: var(--dsw-alias-bg-layer-2) !important;
+}
+
+/* 段落与列表的垂直节奏：Hearth 比 opencode 更宽松 */
+html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :is(p, ul, ol, blockquote) {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markdown_"]) :is(h1, h2, h3, h4, h5, h6) {
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
