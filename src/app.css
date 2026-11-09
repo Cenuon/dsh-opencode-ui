@@ -1759,49 +1759,42 @@ html body [data-conversation-scroll] :is([class^="_markdown_"], [class*=" _markd
   font-size: 1em !important;
 }
 
-/* H5 · 「＋ 新建」分体按钮：整体 6px 圆角，拼缝直角。
+/* H6 · 分体按钮（「＋ 新建」「＋ 添加插件」）统一为 6px 圆角矩形。
  *
- * 用户反馈「还有一边太圆了」——左端仍是大圆角。上一版只钉了
- * addPrimary / addButton / addMore 三个类，但左圆角可能来自 addGroup 容器
- * 或它的直接子元素（两段式按钮的包裹层）。
- * 这次把 addGroup、它的直接子元素、以及子元素里的首末按钮全部钉死，
- * 且用**硬编码 6px**（不走 token），排除 token 解析差异。
+ * 实测三套模块的命名互不冲突（全 asar 唯一）：
+ *   自动化任务页 CDG4uW： headerAction / createPrimary / createMore
+ *   插件页       w6M7KW： addButton   / addPrimary   / addMore
  *
- * DSH 原生结构（plugin-manager）：
- *   addGroup  { display:inline-flex; align-items:stretch }
- *   addButton / addPrimary / addMore { border-radius: var(--dsw-radius-md) }
- *   addPrimary { 右上/右下 0 }   addMore { 左上/左下 0 }
- * 即：整体是一个圆角矩形，中间拼缝。 */
+ * 当前问题：
+ *   · CDG4uW_headerAction 硬编码 border-radius: 16px（32px 高 → 胶囊）
+ *     且 createMore 右侧用 var(--dsw-radius-lg)（本插件 token = 6px），
+ *     于是左端 16px、右端 6px，左右不对称。
+ *   · 插件页 toolbar 有 gap: 16px，把两段按钮撑开成两个独立圆角块。
+ */
+
+/* —— 自动化任务页 —— */
+html body :is([class$="_creationActions"], [class*="_creationActions "]) :is([class$="_headerAction"], [class*="_headerAction "]) {
+  border-radius: 6px !important;
+}
+
+html body :is([class$="_createPrimary"], [class*="_createPrimary "]) {
+  border-radius: 6px 0 0 6px !important;
+}
+
+html body :is([class$="_createMore"], [class*="_createMore "]) {
+  border-radius: 0 6px 6px 0 !important;
+}
+
+/* —— 插件页 —— */
 html body :is([class$="_addGroup"], [class*="_addGroup "]) {
-  border-radius: 6px !important;
-  overflow: visible !important;
+  gap: 0 !important;
 }
 
-html body :is([class$="_addGroup"], [class*="_addGroup "]) > * {
-  border-radius: 6px !important;
+html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addButton"], [class*="_addButton "]),
+html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addPrimary"], [class*="_addPrimary "]) {
+  border-radius: 6px 0 0 6px !important;
 }
 
-/* 左段：左圆角保留，右侧拼缝直角 */
-html body :is([class$="_addGroup"], [class*="_addGroup "]) > *:first-child,
-html body :is([class$="_addGroup"], [class*="_addGroup "]) > *:first-child > *:first-child {
-  border-top-left-radius: 6px !important;
-  border-bottom-left-radius: 6px !important;
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-}
-
-/* 右段：右圆角保留，左侧拼缝直角 */
-html body :is([class$="_addGroup"], [class*="_addGroup "]) > *:last-child,
-html body :is([class$="_addGroup"], [class*="_addGroup "]) > *:last-child > *:last-child {
-  border-top-right-radius: 6px !important;
-  border-bottom-right-radius: 6px !important;
-  border-top-left-radius: 0 !important;
-  border-bottom-left-radius: 0 !important;
-}
-
-/* 兜底：addGroup 内任何按钮都不允许出现超过 6px 的圆角 */
-html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class^="_button_"], [class*=" _button_"]),
-html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addPrimary"], [class*="_addPrimary "]),
 html body :is([class$="_addGroup"], [class*="_addGroup "]) :is([class$="_addMore"], [class*="_addMore "]) {
-  border-radius: 6px !important;
+  border-radius: 0 6px 6px 0 !important;
 }
