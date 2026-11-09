@@ -242,7 +242,7 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
    排除折叠态（折叠态是 36×36 居中图标）。 */
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]) {
   min-height: 30px;
-  border-radius: var(--dsw-radius-md);
+  border-radius: 999px;
   gap: 6px;
   margin: 0;
   padding: 0 6px;
@@ -261,8 +261,16 @@ html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebar
 }
 
 html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_root"], [class*="_root "]):not(:is([class$="_collapsed"], [class*="_collapsed "])) :is([class$="_panelRow"], [class*="_panelRow "]):is([class$="_panelActive"], [class*="_panelActive "]) {
-  background: var(--dsw-alias-interactive-bg-hover);
-  color: var(--dsw-alias-label-primary);
+  /* Hearth：激活项是黑色胶囊 + 白字（参考图实测 #0c0c0c） */
+  background: var(--dsw-alias-button-primary-fill);
+  color: var(--dsw-alias-label-primary-foreground);
+  border-radius: 999px;
+}
+
+/* 激活项内的文字与 SVG 一并转白 */
+html body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_panelRow"], [class*="_panelRow "]):is([class$="_panelActive"], [class*="_panelActive "]) :is(svg, :is([class$="_panelTitle"], [class*="_panelTitle "]), [class*="_panelTitle "]) {
+  color: inherit;
+  fill: currentColor;
 }
 
 /* B15 + B16 · 图标按钮（_iconButton 有 4 个模块，必须限定在 sidebarCol 内）。
