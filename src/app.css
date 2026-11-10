@@ -135,7 +135,10 @@ html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]
    必须归零。高度 52px 保持不动——它是给 macOS 交通灯预留的净空。 */
 html:not([data-windows-titlebar]) body :is([class$="_frame"], [class*="_frame "]):has(> :is([class$="_sidebarCol"], [class*="_sidebarCol "])) > :is([class$="_sidebarCol"], [class*="_sidebarCol "]) :is([class$="_topStrip"], [class*="_topStrip "]) {
   margin: 0 calc(-1 * var(--dsh-sidebar-inline-padding)) 0;
-  padding: 0 0 2px;
+  /* ★ 水平内边距必须保留。这条规则用负 margin 让工具条向外溢出到侧栏边缘，
+     若同时把 padding 清零，工具条内容（折叠按钮等）会顶死在侧栏右边缘，
+     被侧栏的 overflow 裁掉一半 —— 用户反馈「左上角折叠按钮被遮住了」。 */
+  padding: 0 var(--dsh-sidebar-inline-padding) 2px;
 }
 
 /* B4 · 品牌行：对齐 opencode 顶栏内层 height:28px; gap:4px。
