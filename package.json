@@ -21,7 +21,8 @@
     "src",
     "docs",
     "build.mjs",
-    "tools"
+    "tools",
+    "assets"
   ],
   "dsh": {
     "bundle": {
