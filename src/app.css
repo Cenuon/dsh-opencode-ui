@@ -1256,43 +1256,46 @@ html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-compose
 
 /* F25 · 输入框底部状态栏左右分组。
  *
- * 用户要求：`113 tok/s`（activity）与 `master`（git-branch）放左边，
- * `缓存命中 97%`（usage）与 `23%`（ContextMeter）放最右边。
+ * 目标布局（用户指定）：
+ *   左：git 分支 · 输出速度
+ *   右：缓存命中 · 上下文已用
  *
  * DOM 结构（实测 ui-conversation 的 InputBar）：
  *   <div class="JZLxKW_dock" data-composer-dock>
- *     <span data-composer-stat="activity">  113 tok/s
- *     <span data-composer-stat="usage">     缓存命中 97%
- *     <span data-composer-stat="git-branch"> master          ← 本插件
- *     <ContextMeter>                        23%             ← 无 stat 属性
+ *     <div data-slot style="display:contents">      ← slot 宿主，不产生盒子
+ *       <span data-composer-stat="activity">   138 tok/s
+ *       <span data-composer-stat="usage">      缓存命中 97%
+ *       <span data-composer-stat="git-branch"> feature/opencode-ui-skin
+ *     </div>
+ *     <button class="…_trigger">               40%  ← ContextMeter 的根
  *   </div>
- * 容器原生是 `justify-content: center`，所以四块一直挤在中间。
+ * 容器原生 `justify-content: center`，四块挤在中间。
  *
- * 做法：容器改 flex-start，用 order 重排成「活动+分支 | 用量+占用」，
- * 再给右组第一项 `margin-left: auto` 把它俩推到最右。
- * 用 data-composer-stat 语义锚点定位，不依赖 hash 类名。 */
+ * ★ 关键：slot 项外层包了 `display: contents` 的宿主，所以**不能用 `>` 直系选择器**
+ *   （它的父元素是宿主，但视觉上仍是 dock 的 flex item）—— 用后代选择器。
+ *   ContextMeter 是 dock 的直接子元素，用 `>` + `_trigger` 后缀定位。
+ *
+ * order 决定左右与顺序：分支(10) → 速度(20) → 缓存(30) → 上下文(40)，
+ * 缓存项加 `margin-left: auto` 把右组推到最右。 */
 html body [data-composer-dock] {
   justify-content: flex-start;
 }
 
-/* 左组：活动速度、git 分支 */
-html body [data-composer-dock] > [data-composer-stat="activity"] {
-  order: 1;
+html body [data-composer-dock] [data-composer-stat="git-branch"] {
+  order: 10;
 }
 
-html body [data-composer-dock] > [data-composer-stat="git-branch"] {
-  order: 2;
+html body [data-composer-dock] [data-composer-stat="activity"] {
+  order: 20;
 }
 
-/* 右组：缓存命中（本项承担 margin-left:auto，把整组推到最右）、上下文占用 */
-html body [data-composer-dock] > [data-composer-stat="usage"] {
-  order: 3;
+html body [data-composer-dock] [data-composer-stat="usage"] {
+  order: 30;
   margin-left: auto;
 }
 
-/* ContextMeter 没有 data-composer-stat，按「不带该属性的直接子元素」定位 */
-html body [data-composer-dock] > :not([data-composer-stat]) {
-  order: 4;
+html body [data-composer-dock] > :is([class$="_trigger"], [class*="_trigger "]) {
+  order: 40;
 }
 
 /* F23 · 上下文占用进度条：opencode 无胶囊、发丝化 */
