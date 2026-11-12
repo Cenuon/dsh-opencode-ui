@@ -1294,7 +1294,10 @@ html body [data-composer-dock] [data-composer-stat="usage"] {
   margin-left: auto;
 }
 
-html body [data-composer-dock] > :is([class$="_trigger"], [class*="_trigger "]) {
+/* ContextMeter 的根类以 _trigger 结尾。实测它和 slot 项一样被包在宿主里，
+ * 用 `>` 直系选择器匹配不到（结果它保持 order:0 排到了最左），改用后代选择器。
+ * 作用域限定在 dock 内，而 dock 里只有 ContextMeter 用 _trigger，不会误伤。 */
+html body [data-composer-dock] :is([class$="_trigger"], [class*="_trigger "]) {
   order: 40;
 }
 
