@@ -1260,45 +1260,33 @@ html body :is([class$="_composerSeat"], [class*="_composerSeat "]) [data-compose
  *   左：git 分支 · 输出速度
  *   右：缓存命中 · 上下文已用
  *
- * DOM 结构（实测 ui-conversation 的 InputBar）：
- *   <div class="JZLxKW_dock" data-composer-dock>
- *     <div data-slot style="display:contents">      ← slot 宿主，不产生盒子
- *       <span data-composer-stat="activity">   138 tok/s
- *       <span data-composer-stat="usage">      缓存命中 97%
- *       <span data-composer-stat="git-branch"> feature/opencode-ui-skin
- *     </div>
- *     <button class="…_trigger">               40%  ← ContextMeter 的根
- *   </div>
- * 容器原生 `justify-content: center`，四块挤在中间。
+ * ★ 设计要点：**不去定位 ContextMeter**。
+ *   flex 的 order 默认值是 0。这里把三个统计项设成负数（-3 / -2 / -1），
+ *   任何没被我们匹配到的元素（ContextMeter 就是这种）保持默认 0，
+ *   自然排在它们后面 —— 无论它的类名、包裹层级怎么变，结果都成立。
+ *   之前两版试图用 `> _trigger` 和后代 `_trigger` 去命中它，都因为
+ *   类名/包裹层不符而失效，把 41% 留在了最左。
  *
- * ★ 关键：slot 项外层包了 `display: contents` 的宿主，所以**不能用 `>` 直系选择器**
- *   （它的父元素是宿主，但视觉上仍是 dock 的 flex item）—— 用后代选择器。
- *   ContextMeter 是 dock 的直接子元素，用 `>` + `_trigger` 后缀定位。
+ * 排序结果：分支(-3) → 速度(-2) → 缓存(-1) → 其它(0, 即 ContextMeter)
+ * 缓存项带 margin-left: auto，于是「缓存 + 上下文」整组被推到最右。
  *
- * order 决定左右与顺序：分支(10) → 速度(20) → 缓存(30) → 上下文(40)，
- * 缓存项加 `margin-left: auto` 把右组推到最右。 */
+ * 统计项用**后代选择器**：slot 项外层包了 display:contents 宿主，
+ * `>` 直系选择器匹配不到（父元素是宿主，视觉上仍是 dock 的 flex item）。 */
 html body [data-composer-dock] {
   justify-content: flex-start;
 }
 
 html body [data-composer-dock] [data-composer-stat="git-branch"] {
-  order: 10;
+  order: -3;
 }
 
 html body [data-composer-dock] [data-composer-stat="activity"] {
-  order: 20;
+  order: -2;
 }
 
 html body [data-composer-dock] [data-composer-stat="usage"] {
-  order: 30;
+  order: -1;
   margin-left: auto;
-}
-
-/* ContextMeter 的根类以 _trigger 结尾。实测它和 slot 项一样被包在宿主里，
- * 用 `>` 直系选择器匹配不到（结果它保持 order:0 排到了最左），改用后代选择器。
- * 作用域限定在 dock 内，而 dock 里只有 ContextMeter 用 _trigger，不会误伤。 */
-html body [data-composer-dock] :is([class$="_trigger"], [class*="_trigger "]) {
-  order: 40;
 }
 
 /* F23 · 上下文占用进度条：opencode 无胶囊、发丝化 */
